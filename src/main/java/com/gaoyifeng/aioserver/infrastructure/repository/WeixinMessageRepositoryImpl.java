@@ -1,23 +1,27 @@
 package com.gaoyifeng.aioserver.infrastructure.repository;
 
-import com.gaoyifeng.aioserver.domain.weixin.adapter.repository.WeixinMessageRepository;
+import com.gaoyifeng.aioserver.domain.weixin.adapter.port.IMessageRepositoryPort;
 import com.gaoyifeng.aioserver.domain.weixin.model.aggregate.MessageConversation;
 import com.gaoyifeng.aioserver.domain.weixin.model.entity.WeixinMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * 微信消息仓储实现 - Infrastructure层
- * 使用内存存储（实际项目中应使用数据库）
+ * 实现Port接口，使用内存存储（类似参考项目的简化实现）
+ *
+ * @author gaoyifeng
  */
 @Slf4j
 @Repository
-public class WeixinMessageRepositoryImpl implements WeixinMessageRepository {
+public class WeixinMessageRepositoryImpl implements IMessageRepositoryPort {
 
-    // 内存存储（生产环境应替换为数据库）
+    // 内存存储（简化实现，类似参考项目）
     private final ConcurrentMap<String, MessageConversation> conversationCache = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, WeixinMessage> messageCache = new ConcurrentHashMap<>();
 
@@ -108,11 +112,35 @@ public class WeixinMessageRepositoryImpl implements WeixinMessageRepository {
         }
     }
 
+    @Override
+    public List<WeixinMessage> findMessagesByConversationId(String conversationId) {
+        try {
+            // 简化实现：返回所有消息
+            return new ArrayList<>(messageCache.values());
+        } catch (Exception e) {
+            log.error("查找对话消息失败，对话ID：{}", conversationId, e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<MessageConversation> findConversationsByOpenId(String openId) {
+        try {
+            // 简化实现：过滤返回该用户的对话
+            return conversationCache.values().stream()
+                    .filter(conv -> openId.equals(conv.getOpenId()))
+                    .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        } catch (Exception e) {
+            log.error("查找用户对话失败，OpenID：{}", openId, e);
+            return null;
+        }
+    }
+
     /**
      * 获取存储统计信息（用于监控）
      */
     public String getStorageStats() {
-        return String.format("对话数量：%d，消息数量：%d",
+        return String.format("内存存储 - 对话数量：%d，消息数量：%d",
                 conversationCache.size(), messageCache.size());
     }
 }

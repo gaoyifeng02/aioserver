@@ -25,36 +25,43 @@ class WeixinPortalControllerTest {
     @Test
     void testSignatureService() {
         // 测试签名验证服务
-        String token = "test-token";
         String timestamp = "1234567890";
         String nonce = "abc123";
         String signature = "test-signature";
 
-        // 这里应该生成正确的签名，但为了测试简化处理
-        boolean result = signatureService.verifySignature(token, signature, timestamp, nonce);
+        // 重构后的verifySignature方法参数顺序改变了
+        boolean result = signatureService.verifySignature(signature, timestamp, nonce);
 
         // 由于签名是错误的，应该返回false
         assertFalse(result);
     }
 
     @Test
-    void testMessageService() {
-        // 测试消息解析
-        String xmlContent = "<xml>" +
-                "<ToUserName><![CDATA[test-to-user]]></ToUserName>" +
-                "<FromUserName><![CDATA[test-from-user]]></FromUserName>" +
-                "<CreateTime>1234567890</CreateTime>" +
-                "<MsgType><![CDATA[text]]></MsgType>" +
-                "<Content><![CDATA[你好]]></Content>" +
-                "<MsgId>1234567890123456</MsgId>" +
-                "</xml>";
+    void testMessageServiceValidation() {
+        // 测试消息验证
+        WeixinMessage message = WeixinMessage.builder()
+                .msgId("test-msg-id")
+                .fromUserName("test-openid")
+                .toUserName("test-original-id")
+                .createTime("1234567890")
+                .content("你好")
+                .msgType("text")
+                .build();
 
-        WeixinMessage message = messageService.parseMessage(xmlContent);
+        boolean isValid = messageService.validateMessage(message);
+        assertTrue(isValid);
 
-        assertNotNull(message);
-        assertEquals("test-from-user", message.getFromUserName());
-        assertEquals("test-to-user", message.getToUserName());
-        assertTrue(message.isValid());
+        // 测试无效消息
+        WeixinMessage invalidMessage = WeixinMessage.builder()
+                .msgId("")
+                .fromUserName("")
+                .toUserName("")
+                .content("")
+                .msgType("")
+                .build();
+
+        boolean isInvalidValid = messageService.validateMessage(invalidMessage);
+        assertFalse(isInvalidValid);
     }
 
     @Test
@@ -65,36 +72,13 @@ class WeixinPortalControllerTest {
                 .fromUserName("test-openid")
                 .toUserName("test-original-id")
                 .createTime("1234567890")
-                .messageContent(MessageContent.builder()
-                        .content("你好")
-                        .msgType("text")
-                        .build())
+                .content("你好")
+                .msgType("text")
                 .build();
 
-        String replyContent = messageService.processMessage(message);
+        String replyContent = messageService.processMessageContent(message);
 
         assertNotNull(replyContent);
         assertTrue(replyContent.contains("欢迎使用"));
-    }
-
-    @Test
-    void testMessageContentValueObject() {
-        // 测试消息内容值对象
-        MessageContent content = MessageContent.builder()
-                .content("测试消息")
-                .msgType("text")
-                .build();
-
-        assertTrue(content.isValid());
-        assertTrue(content.isTextMessage());
-        assertEquals(4, content.getLength());
-
-        // 测试无效内容
-        MessageContent invalidContent = MessageContent.builder()
-                .content("")
-                .msgType("text")
-                .build();
-
-        assertFalse(invalidContent.isValid());
     }
 }

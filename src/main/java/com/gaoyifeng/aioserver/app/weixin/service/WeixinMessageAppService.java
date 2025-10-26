@@ -6,7 +6,7 @@ import com.gaoyifeng.aioserver.app.weixin.dto.MessageProcessResponse;
 import com.gaoyifeng.aioserver.app.weixin.assembler.MessageAssembler;
 import com.gaoyifeng.aioserver.domain.weixin.model.entity.WeixinMessage;
 import com.gaoyifeng.aioserver.domain.weixin.model.aggregate.MessageConversation;
-import com.gaoyifeng.aioserver.domain.weixin.adapter.repository.WeixinMessageRepository;
+import com.gaoyifeng.aioserver.domain.weixin.adapter.port.IMessageRepositoryPort;
 import com.gaoyifeng.aioserver.domain.weixin.service.SignatureService;
 import com.gaoyifeng.aioserver.domain.weixin.service.MessageService;
 import com.gaoyifeng.aioserver.infrastructure.config.WeixinConfig;
@@ -36,7 +36,7 @@ public class WeixinMessageAppService {
     private MessageService messageService;
 
     @Autowired
-    private WeixinMessageRepository weixinMessageRepository;
+    private IMessageRepositoryPort weixinMessageRepository;
 
     @Autowired
     private MessageAssembler messageAssembler;

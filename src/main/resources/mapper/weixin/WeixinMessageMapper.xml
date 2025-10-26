@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.WeixinMessageMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.WeixinMessagePO">
+        <id column="id" property="id" />
+        <result column="msg_id" property="msgId" />
+        <result column="conversation_id" property="conversationId" />
+        <result column="to_user_name" property="toUserName" />
+        <result column="from_user_name" property="fromUserName" />
+        <result column="msg_type" property="msgType" />
+        <result column="content" property="content" />
+        <result column="media_id" property="mediaId" />
+        <result column="format" property="format" />
+        <result column="recognition" property="recognition" />
+        <result column="thumb_media_id" property="thumbMediaId" />
+        <result column="location_x" property="locationX" />
+        <result column="location_y" property="locationY" />
+        <result column="scale" property="scale" />
+        <result column="label" property="label" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="url" property="url" />
+        <result column="pic_url" property="picUrl" />
+        <result column="create_time" property="createTime" />
+        <result column="msg_direction" property="msgDirection" />
+        <result column="processed" property="processed" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        id, msg_id, conversation_id, to_user_name, from_user_name, msg_type, content,
+        media_id, format, recognition, thumb_media_id, location_x, location_y, scale,
+        label, title, description, url, pic_url, create_time, msg_direction,
+        processed, created_time, updated_time, deleted
+    </sql>
+
+    <!-- 根据对话ID查找消息列表 -->
+    <select id="selectByConversationId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM weixin_message
+        WHERE conversation_id = #{conversationId}
+        AND deleted = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- 根据OpenID和消息方向查找消息列表 -->
+    <select id="selectByOpenIdAndDirection" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM weixin_message
+        WHERE from_user_name = #{openId}
+        AND msg_direction = #{msgDirection}
+        AND deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 批量插入消息 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO weixin_message (
+            msg_id, conversation_id, to_user_name, from_user_name, msg_type, content,
+            media_id, format, recognition, thumb_media_id, location_x, location_y, scale,
+            label, title, description, url, pic_url, create_time, msg_direction,
+            processed, created_time, updated_time
+        ) VALUES
+        <foreach collection="messageList" item="item" separator=",">
+            (
+                #{item.msgId}, #{item.conversationId}, #{item.toUserName}, #{item.fromUserName},
+                #{item.msgType}, #{item.content}, #{item.mediaId}, #{item.format}, #{item.recognition},
+                #{item.thumbMediaId}, #{item.locationX}, #{item.locationY}, #{item.scale},
+                #{item.label}, #{item.title}, #{item.description}, #{item.url}, #{item.picUrl},
+                #{item.createTime}, #{item.msgDirection}, #{item.processed},
+                #{item.createdTime}, #{item.updatedTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

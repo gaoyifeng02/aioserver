@@ -1,5 +1,6 @@
 package com.gaoyifeng.aioserver.trigger;
 
+import com.gaoyifeng.aioserver.api.IWeixinService;
 import com.gaoyifeng.aioserver.app.weixin.dto.MessageProcessRequest;
 import com.gaoyifeng.aioserver.app.weixin.dto.MessageProcessResponse;
 import com.gaoyifeng.aioserver.app.weixin.dto.SignatureVerifyRequest;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 微信服务对接控制器 - DDD架构重构版
+ * 实现IWeixinService API接口
  * 对接地址：/api/v1/weixin/portal/receive
  *
  * 采用DDD架构，控制器只负责：
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/weixin/portal")
-public class WeixinPortalController {
+public class WeixinPortalController implements IWeixinService {
 
     @Autowired
     private WeixinMessageAppService weixinMessageAppService;
@@ -47,22 +49,14 @@ public class WeixinPortalController {
             log.info("接收到微信服务器验证请求：signature={}, timestamp={}, nonce={}, echostr={}",
                     signature, timestamp, nonce, echostr);
 
-            // 构建签名验证请求
-            SignatureVerifyRequest request = SignatureVerifyRequest.builder()
-                    .signature(signature)
-                    .timestamp(timestamp)
-                    .nonce(nonce)
-                    .echostr(echostr)
-                    .build();
+            // 调用API接口方法
+            Result<String> response = verifySignature(signature, timestamp, nonce, echostr);
 
-            // 调用应用服务进行验证
-            Result<String> result = weixinMessageAppService.verifySignature(request);
-
-            if (result.isSuccess()) {
+            if (response.isSuccess()) {
                 log.info("微信服务器验证成功");
-                return result.getData();
+                return response.getData();
             } else {
-                log.warn("微信服务器验证失败：{}", result.getInfo());
+                log.warn("微信服务器验证失败：{}", response.getInfo());
                 return null;
             }
 
@@ -96,6 +90,48 @@ public class WeixinPortalController {
         try {
             log.info("接收到微信消息请求：openid={}, body={}", openid, requestBody);
 
+            // 调用API接口方法
+            Result<String> response = processMessage(signature, timestamp, nonce, openid, requestBody);
+
+            if (response.isSuccess()) {
+                log.info("微信消息处理成功，回复内容：{}", response.getData());
+                return response.getData();
+            } else {
+                log.warn("微信消息处理失败：{}", response.getInfo());
+                return "";
+            }
+
+        } catch (Exception e) {
+            log.error("微信消息处理异常，openid={}, body={}", openid, requestBody, e);
+            return "";
+        }
+    }
+
+    // ==================== 实现IWeixinService接口方法 ====================
+
+    @Override
+    public Result<String> verifySignature(String signature, String timestamp, String nonce, String echostr) {
+        try {
+            // 构建签名验证请求
+            SignatureVerifyRequest request = SignatureVerifyRequest.builder()
+                    .signature(signature)
+                    .timestamp(timestamp)
+                    .nonce(nonce)
+                    .echostr(echostr)
+                    .build();
+
+            // 调用应用服务进行验证
+            return weixinMessageAppService.verifySignature(request);
+
+        } catch (Exception e) {
+            log.error("微信签名验证异常", e);
+            return Result.fail("9999", "系统异常");
+        }
+    }
+
+    @Override
+    public Result<String> processMessage(String signature, String timestamp, String nonce, String openid, String requestBody) {
+        try {
             // 构建消息处理请求
             MessageProcessRequest request = MessageProcessRequest.builder()
                     .requestBody(requestBody)
@@ -103,8 +139,6 @@ public class WeixinPortalController {
                     .timestamp(timestamp)
                     .nonce(nonce)
                     .openid(openid)
-                    .encryptType(encType)
-                    .msgSignature(msgSignature)
                     .build();
 
             // 调用应用服务处理消息
@@ -112,16 +146,14 @@ public class WeixinPortalController {
 
             if (result.isSuccess()) {
                 String replyXml = result.getData().getReplyXml();
-                log.info("微信消息处理成功，回复内容：{}", result.getData().getReplyContent());
-                return replyXml;
+                return Result.success(replyXml);
             } else {
-                log.warn("微信消息处理失败：{}", result.getInfo());
-                return "";
+                return Result.fail(result.getCode(), result.getInfo());
             }
 
         } catch (Exception e) {
             log.error("微信消息处理异常，openid={}, body={}", openid, requestBody, e);
-            return "";
+            return Result.fail("9999", "系统异常");
         }
     }
 }
