@@ -1,5 +1,6 @@
 package com.gaoyifeng.aioserver.types.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -15,12 +16,12 @@ public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String code;
-    private final String info;
+    private final String message;
     private final T data;
 
-    protected Result(String code, String info, T data) {
+    protected Result(String code, String message, T data) {
         this.code = code;
-        this.info = info;
+        this.message = message;
         this.data = data;
     }
 
@@ -125,6 +126,7 @@ public class Result<T> implements Serializable {
      *
      * @return 如果结果代码是200，则返回true
      */
+    @JsonIgnore
     public boolean isSuccess() {
         return ResultCode._200.getCode().equals(this.code);
     }
@@ -133,8 +135,8 @@ public class Result<T> implements Serializable {
         return code;
     }
 
-    public String getInfo() {
-        return info;
+    public String getMessage() {
+        return message;
     }
 
     public T getData() {
@@ -147,20 +149,20 @@ public class Result<T> implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Result<?> result = (Result<?>) o;
         return Objects.equals(code, result.code) &&
-                Objects.equals(info, result.info) &&
+                Objects.equals(message, result.message) &&
                 Objects.equals(data, result.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, info, data);
+        return Objects.hash(code, message, data);
     }
 
     @Override
     public String toString() {
         return "Result{" +
                 "code='" + code + '\'' +
-                ", info='" + info + '\'' +
+                ", message='" + message + '\'' +
                 ", data=" + data +
                 '}';
     }

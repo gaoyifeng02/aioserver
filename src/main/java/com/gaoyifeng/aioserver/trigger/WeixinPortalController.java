@@ -68,7 +68,7 @@ public class WeixinPortalController implements IWeixinService {
                 log.info("微信服务器验证成功");
                 return response.getData();
             } else {
-                log.warn("微信服务器验证失败：{}", response.getInfo());
+                log.warn("微信服务器验证失败：{}", response.getMessage());
                 return null;
             }
 
@@ -109,7 +109,7 @@ public class WeixinPortalController implements IWeixinService {
                 log.info("微信消息处理成功，回复内容：{}", response.getData());
                 return response.getData();
             } else {
-                log.warn("微信消息处理失败：{}", response.getInfo());
+                log.warn("微信消息处理失败：{}", response.getMessage());
                 return "";
             }
 

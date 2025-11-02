@@ -1,8 +1,10 @@
 package com.gaoyifeng.aioserver.trigger;
 
 import com.gaoyifeng.aioserver.api.IAuthService;
-import com.gaoyifeng.aioserver.api.dto.auth.LoginDto;
-import com.gaoyifeng.aioserver.api.dto.auth.UserDto;
+import com.gaoyifeng.aioserver.api.dto.auth.request.LoginRequestDto;
+import com.gaoyifeng.aioserver.api.dto.auth.request.RegisterRequestDto;
+import com.gaoyifeng.aioserver.api.dto.auth.response.LoginResponseDto;
+import com.gaoyifeng.aioserver.api.dto.auth.response.UserInfoResponseDto;
 import com.gaoyifeng.aioserver.domain.auth.model.entity.User;
 import com.gaoyifeng.aioserver.domain.auth.service.UserAuthService;
 import com.gaoyifeng.aioserver.types.common.Result;
@@ -39,7 +41,7 @@ public class AuthController implements IAuthService {
      */
     @Override
     @PostMapping("/login")
-    public Result Login(@RequestBody LoginDto loginDto) {
+    public Result<LoginResponseDto> Login(@RequestBody LoginRequestDto loginDto) {
         try {
             log.info("接收到登录请求：username={}", loginDto != null ? loginDto.getUsername() : "null");
 
@@ -67,10 +69,11 @@ public class AuthController implements IAuthService {
             // 生成并缓存token
             String token = userAuthService.generateToken(user.getId());
 
-            // 转换为DTO返回，包含token
-            UserDto userDto = convertToUserDto(user, token);
+            // 创建登录响应DTO，只返回token
+            LoginResponseDto loginResponseDto = new LoginResponseDto();
+            loginResponseDto.setToken(token);
             log.info("用户登录成功：username={}, token={}", username, token);
-            return Result.success(userDto);
+            return Result.success(loginResponseDto);
 
         } catch (Exception e) {
             log.error("登录异常", e);
@@ -80,22 +83,22 @@ public class AuthController implements IAuthService {
 
     /**
      * 用户注册
-     * @param loginDto 注册请求DTO
+     * @param registerDto 注册请求DTO
      * @return 注册结果，成功返回用户信息
      */
     @PostMapping("/register")
     @Override
-    public Result Register(@RequestBody LoginDto loginDto) {
+    public Result Register(@RequestBody RegisterRequestDto registerDto) {
         try {
-            log.info("接收到注册请求：username={}", loginDto != null ? loginDto.getUsername() : "null");
+            log.info("接收到注册请求：username={}", registerDto != null ? registerDto.getUsername() : "null");
 
             // 参数验证
-            if (loginDto == null) {
+            if (registerDto == null) {
                 return Result.fail(ResultCode.PARAM_ERROR, "注册参数不能为空");
             }
 
-            String username = loginDto.getUsername();
-            String password = loginDto.getPassword();
+            String username = registerDto.getUsername();
+            String password = registerDto.getPassword();
 
             if (username == null || username.trim().isEmpty()) {
                 return Result.fail(ResultCode.PARAM_ERROR, "用户名不能为空");
@@ -107,10 +110,8 @@ public class AuthController implements IAuthService {
             // 调用服务层进行注册
             User newUser = userAuthService.register(username.trim(), password);
 
-            // 转换为DTO返回
-            UserDto userDto = convertToUserDto(newUser);
             log.info("用户注册成功：username={}", username);
-            return Result.success(userDto);
+            return Result.success("注册成功");
 
         } catch (IllegalArgumentException e) {
             log.warn("注册参数错误：{}", e.getMessage());
@@ -131,7 +132,7 @@ public class AuthController implements IAuthService {
      */
     @GetMapping("/getUserInfo")
     @Override
-    public Result<UserDto> GetUserInfo() {
+    public Result<UserInfoResponseDto> GetUserInfo() {
         try {
             log.info("接收到获取用户信息请求");
 
@@ -162,9 +163,11 @@ public class AuthController implements IAuthService {
             }
 
             // 转换为DTO返回
-            UserDto userDto = convertToUserDto(user);
+            UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+            userInfoResponseDto.setId(user.getId());
+            userInfoResponseDto.setUsername(user.getUsername());
             log.info("获取用户信息成功：userId={}", userId);
-            return Result.success(userDto);
+            return Result.success(userInfoResponseDto);
 
         } catch (Exception e) {
             log.error("获取用户信息异常", e);
@@ -172,41 +175,4 @@ public class AuthController implements IAuthService {
         }
     }
 
-  
-    /**
-     * 将User实体转换为UserDto（用于登录，包含token）
-     * @param user 用户实体
-     * @param token 用户token
-     * @return 用户DTO
-     */
-    private UserDto convertToUserDto(User user, String token) {
-        if (user == null) {
-            return null;
-        }
-
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setToken(token);
-        userDto.setLoginTime(System.currentTimeMillis());
-        // 注意：密码不返回到前端
-        return userDto;
-    }
-
-    /**
-     * 将User实体转换为UserDto（用于获取用户信息，不包含token）
-     * @param user 用户实体
-     * @return 用户DTO
-     */
-    private UserDto convertToUserDto(User user) {
-        if (user == null) {
-            return null;
-        }
-
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        // 注意：密码和token不返回到前端
-        return userDto;
-    }
-}
+  }
