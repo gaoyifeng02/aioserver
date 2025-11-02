@@ -1,0 +1,108 @@
+server:
+  port: 10001
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: aioserver
+  profiles:
+    active: dev
+
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/aioserver?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: AioserverHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # MyBatis Plus配置
+  mybatis-plus:
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.gaoyifeng.aioserver.infrastructure.dao.po
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+      call-setters-on-nulls: true
+      jdbc-type-for-null: 'null'
+    global-config:
+      db-config:
+        id-type: ASSIGN_ID
+        logic-delete-field: deleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+
+# 微信配置
+weixin:
+  config:
+    # 微信公众号token
+    token: your-weixin-token-here
+    # 微信公众号原始ID
+    originalid: your-original-id-here
+    # 微信公众号AppID（可选）
+    appid: your-app-id-here
+    # 微信公众号AppSecret（可选）
+    appsecret: your-app-secret-here
+    # 消息加密密钥（可选）
+    encoding-aes-key: your-encoding-aes-key-here
+    # 是否开启消息加密
+    encrypt-enabled: false
+    # 签名有效期（秒）
+    signature:
+      max-age: 300
+
+# 日志配置
+logging:
+  level:
+    com.gaoyifeng.aioserver: DEBUG
+    org.springframework: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/aioserver.log
+    max-size: 10MB
+    max-history: 30
+
+---
+# 开发环境配置
+spring:
+  profiles: dev
+
+weixin:
+  config:
+    token: dev-token-123456
+    originalid: dev-original-id
+
+---
+# 测试环境配置
+spring:
+  profiles: test
+
+weixin:
+  config:
+    token: test-token-123456
+    originalid: test-original-id
+
+---
+# 生产环境配置
+spring:
+  profiles: prod
+
+weixin:
+  config:
+    token: ${WEIXIN_TOKEN:prod-token-123456}
+    originalid: ${WEIXIN_ORIGINAL_ID:prod-original-id}
