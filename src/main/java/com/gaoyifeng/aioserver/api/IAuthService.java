@@ -1,8 +1,6 @@
 package com.gaoyifeng.aioserver.api;
 
 
-import com.gaoyifeng.aioserver.api.dto.auth.LoginDto;
-import com.gaoyifeng.aioserver.api.dto.auth.UserDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.LoginRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.RegisterRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.response.LoginResponseDto;
