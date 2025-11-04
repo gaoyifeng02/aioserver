@@ -1,7 +1,10 @@
 package com.gaoyifeng.aioserver.infrastructure.interceptor;
 
-// import com.gaoyifeng.aioserver.infrastructure.util.TokenCache;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaoyifeng.aioserver.types.common.Result;
+import com.gaoyifeng.aioserver.types.common.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,11 +19,13 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // 白名单路径，无需token验证
     private static final String[] WHITE_LIST = {
             "/api/v1/idaas/auth/login",
             "/api/v1/idaas/auth/register",
-            "/api/demo",  // demo接口也加入白名单
     };
 
     @Override
@@ -42,7 +47,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             log.warn("请求缺少token：{} {}", method, requestURI);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"code\":\"4001\",\"info\":\"请先登录\",\"data\":null}");
+            Result<Object> result = Result.fail(ResultCode.UNAUTHORIZED, "请先登录");
+            response.getWriter().write(objectMapper.writeValueAsString(result));
             return false;
         }
 
@@ -57,7 +63,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             log.warn("无效的token：{} {}", method, requestURI);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"code\":\"4001\",\"info\":\"登录已过期，请重新登录\",\"data\":null}");
+            Result<Object> result = Result.fail(ResultCode.UNAUTHORIZED, "登录已过期，请重新登录");
+            response.getWriter().write(objectMapper.writeValueAsString(result));
             return false;
         }
 
