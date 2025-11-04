@@ -12,9 +12,9 @@ public interface ICateService {
 
     Result add(CateAddRequestDto cateAddRequestDto);
 
-    Result edit(CateEditRequestDto cateEditRequestDto);
+    Result edit(String id, CateEditRequestDto cateEditRequestDto);
 
-    Result delete(CateDeleteRequestDto cateDeleteRequestDto);
+    Result delete(String id, CateDeleteRequestDto cateDeleteRequestDto);
 
     Result<List<CateGetListResponseDto>> getList();
 

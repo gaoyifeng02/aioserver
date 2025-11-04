@@ -17,22 +17,23 @@ import java.util.List;
 /**
  * 分类控制器 - DDD架构实现
  * 实现分类的增删改查接口
+ * 遵循RESTful API规范
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/blog/categories")
 public class CategoryController implements ICateService {
 
     @Resource
     private CategoryApplicationService categoryApplicationService;
 
     /**
-     * 添加分类
+     * 创建分类 - RESTful POST
      * @param cateAddRequestDto 添加分类请求DTO
      * @return 添加结果
      */
     @Override
-    @PostMapping("/add")
+    @PostMapping
     public Result add(@RequestBody CateAddRequestDto cateAddRequestDto) {
         try {
             log.info("接收到添加分类请求：cateName={}", cateAddRequestDto != null ? cateAddRequestDto.getCateName() : "null");
@@ -54,27 +55,29 @@ public class CategoryController implements ICateService {
     }
 
     /**
-     * 编辑分类
+     * 编辑分类 - RESTful PUT
+     * @param id 分类ID
      * @param cateEditRequestDto 编辑分类请求DTO
      * @return 编辑结果
      */
     @Override
-    @PostMapping("/edit")
-    public Result edit(@RequestBody CateEditRequestDto cateEditRequestDto) {
+    @PutMapping("/{id}")
+    public Result edit(@PathVariable String id, @RequestBody CateEditRequestDto cateEditRequestDto) {
         try {
             log.info("接收到编辑分类请求：id={}, cateName={}",
                 cateEditRequestDto != null ? cateEditRequestDto.getId() : "null",
                 cateEditRequestDto != null ? cateEditRequestDto.getCateName() : "null");
 
-            if (cateEditRequestDto == null || !StringUtils.hasText(cateEditRequestDto.getId())) {
+            if (cateEditRequestDto == null || !StringUtils.hasText(id)) {
                 return Result.fail("分类ID不能为空");
             }
             if (!StringUtils.hasText(cateEditRequestDto.getCateName())) {
                 return Result.fail("分类名称不能为空");
             }
 
+            cateEditRequestDto.setId(id);
             categoryApplicationService.updateCategory(cateEditRequestDto.getId(), cateEditRequestDto.getCateName());
-            log.info("编辑分类成功：id={}, cateName={}", cateEditRequestDto.getId(), cateEditRequestDto.getCateName());
+            log.info("编辑分类成功：id={}, cateName={}", id, cateEditRequestDto.getCateName());
             return Result.success();
         } catch (IllegalArgumentException e) {
             log.warn("编辑分类失败: {}", e.getMessage());
@@ -86,22 +89,28 @@ public class CategoryController implements ICateService {
     }
 
     /**
-     * 删除分类
-     * @param cateDeleteRequestDto 删除分类请求DTO
+     * 删除分类 - RESTful DELETE (支持单个和批量删除)
+     * @param id 分类ID (单个删除)
+     * @param cateDeleteRequestDto 批量删除请求DTO (可选，用于批量删除)
      * @return 删除结果
      */
     @Override
-    @PostMapping("/delete")
-    public Result delete(@RequestBody CateDeleteRequestDto cateDeleteRequestDto) {
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable String id, @RequestBody(required = false) CateDeleteRequestDto cateDeleteRequestDto) {
         try {
-            log.info("接收到删除分类请求：ids={}", cateDeleteRequestDto != null ? cateDeleteRequestDto.getIds() : "null");
+            log.info("接收到删除分类请求：id={}, 批量删除={}", id, cateDeleteRequestDto != null ? cateDeleteRequestDto.getIds() : "单个删除");
 
-            if (cateDeleteRequestDto == null || cateDeleteRequestDto.getIds() == null || cateDeleteRequestDto.getIds().isEmpty()) {
-                return Result.fail("请选择要删除的分类");
+            // 如果提供了批量删除请求，则执行批量删除
+            if (cateDeleteRequestDto != null && cateDeleteRequestDto.getIds() != null && !cateDeleteRequestDto.getIds().isEmpty()) {
+                categoryApplicationService.deleteCategories(cateDeleteRequestDto.getIds());
+                log.info("批量删除分类成功：ids={}", cateDeleteRequestDto.getIds());
+            } else {
+                // 否则执行单个删除
+                java.util.List<String> singleId = java.util.Arrays.asList(id);
+                categoryApplicationService.deleteCategories(singleId);
+                log.info("单个删除分类成功：id={}", id);
             }
 
-            categoryApplicationService.deleteCategories(cateDeleteRequestDto.getIds());
-            log.info("删除分类成功：ids={}", cateDeleteRequestDto.getIds());
             return Result.success();
         } catch (IllegalArgumentException e) {
             log.warn("删除分类失败: {}", e.getMessage());
@@ -113,11 +122,11 @@ public class CategoryController implements ICateService {
     }
 
     /**
-     * 获取分类列表
+     * 获取分类列表 - RESTful GET
      * @return 分类列表
      */
     @Override
-    @GetMapping("/list")
+    @GetMapping
     public Result<List<CateGetListResponseDto>> getList() {
         try {
             log.info("接收到获取分类列表请求");
