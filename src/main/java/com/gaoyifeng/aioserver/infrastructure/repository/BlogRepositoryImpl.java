@@ -62,7 +62,8 @@ public class BlogRepositoryImpl implements IBlogRepository {
 
     @Override
     public List<Blog> findByPage(Integer page, Integer pageSize, String cateId, String title, Integer state) {
-        List<BlogPO> blogPOList = blogMapper.selectByPage(page, pageSize, cateId, title, state);
+        Integer offset = (page - 1) * pageSize;
+        List<BlogPO> blogPOList = blogMapper.selectByPage(offset, pageSize, cateId, title, state);
         return blogPOList.stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toList());

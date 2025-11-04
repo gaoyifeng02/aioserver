@@ -42,9 +42,9 @@ public interface BlogMapper {
             "</if>" +
             "</where>" +
             "ORDER BY create_time DESC " +
-            "LIMIT #{pageSize} OFFSET #{pageSize} * (#{page} - 1)" +
+            "LIMIT #{offset}, #{pageSize}" +
             "</script>")
-    List<BlogPO> selectByPage(@Param("page") Integer page,
+    List<BlogPO> selectByPage(@Param("offset") Integer offset,
                              @Param("pageSize") Integer pageSize,
                              @Param("cateId") String cateId,
                              @Param("title") String title,
