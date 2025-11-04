@@ -1,6 +1,5 @@
 package com.gaoyifeng.aioserver.infrastructure.dao.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gaoyifeng.aioserver.infrastructure.dao.po.WeixinMessagePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,7 +12,7 @@ import java.util.List;
  * @author gaoyifeng
  */
 @Mapper
-public interface WeixinMessageMapper extends BaseMapper<WeixinMessagePO> {
+public interface WeixinMessageMapper {
 
     /**
      * 根据对话ID查找消息列表

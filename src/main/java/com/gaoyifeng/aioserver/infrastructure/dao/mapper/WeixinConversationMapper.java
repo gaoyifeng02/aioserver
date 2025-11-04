@@ -1,6 +1,5 @@
 package com.gaoyifeng.aioserver.infrastructure.dao.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gaoyifeng.aioserver.infrastructure.dao.po.WeixinConversationPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,7 +13,7 @@ import java.util.List;
  * @author gaoyifeng
  */
 @Mapper
-public interface WeixinConversationMapper extends BaseMapper<WeixinConversationPO> {
+public interface WeixinConversationMapper {
 
     /**
      * 根据OpenID查找最近的活跃对话
