@@ -40,36 +40,38 @@ public class CategoryRepositoryImpl implements ICategoryRepository {
 
     @Override
     public Category findByName(String cateName) {
-        // 简化实现，需要在XML中实现具体查询
-        return null; // 暂时返回null，需要XML配置
+        CategoryPO categoryPO = categoryMapper.findByName(cateName);
+        return convertToEntity(categoryPO);
     }
 
     @Override
     public List<Category> findAll() {
-        // 简化实现，需要在XML中实现具体查询
-        return new ArrayList<>(); // 暂时返回空列表，需要XML配置
+        List<CategoryPO> categoryPOList = categoryMapper.findAll();
+        return categoryPOList.stream()
+                .map(this::convertToEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void deleteById(String id) {
-        // 简化实现，需要在XML中实现具体删除
+        categoryMapper.deleteById(id);
     }
 
     @Override
     public void deleteByIds(List<String> ids) {
-        // 简化实现，需要在XML中实现具体批量删除
+        if (ids != null && !ids.isEmpty()) {
+            categoryMapper.deleteByIds(ids);
+        }
     }
 
     @Override
     public boolean existsByName(String cateName) {
-        // 简化实现，需要在XML中实现具体查询
-        return false; // 暂时返回false，需要XML配置
+        return categoryMapper.countByName(cateName) > 0;
     }
 
     @Override
     public boolean existsByNameAndExcludeId(String cateName, String excludeId) {
-        // 简化实现，需要在XML中实现具体查询
-        return false; // 暂时返回false，需要XML配置
+        return categoryMapper.countByNameAndExcludeId(cateName, excludeId) > 0;
     }
 
     private CategoryPO convertToPO(Category category) {

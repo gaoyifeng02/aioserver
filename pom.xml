@@ -137,7 +137,6 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.gaoyifeng.aioserver.AioserverApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
 
                 <executions>

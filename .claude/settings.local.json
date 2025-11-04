@@ -3,7 +3,8 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(mvn compile:*)",
-      "Bash(mvn:*)"
+      "Bash(mvn:*)",
+      "Bash(java:*)"
     ],
     "deny": [],
     "ask": []
