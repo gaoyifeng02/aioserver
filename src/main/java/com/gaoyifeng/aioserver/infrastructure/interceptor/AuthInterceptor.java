@@ -35,6 +35,12 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         log.debug("拦截请求：{} {}", method, requestURI);
 
+        // OPTIONS请求直接放行（处理跨域预检请求）
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            log.debug("OPTIONS预检请求，直接放行：{}", requestURI);
+            return true;
+        }
+
         // 检查是否在白名单中
         if (isWhiteList(requestURI)) {
             log.debug("白名单路径，放行：{}", requestURI);

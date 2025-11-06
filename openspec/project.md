@@ -5,7 +5,7 @@
 
 ## 技术栈
 - [列出您的主要技术]
-- [例如：TypeScript、React、Node.js]
+- [例如：Java、Spring Boot、MySQL、Redis]
 
 ## 项目约定
 
