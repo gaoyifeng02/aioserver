@@ -23,10 +23,10 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 允许所有路径
-                .allowedOrigins("*") // 允许所有来源
+                .allowedOriginPatterns("*") // 允许所有来源模式
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD") // 允许的HTTP方法
                 .allowedHeaders("*") // 允许所有请求头
-                .allowCredentials(false) // 当allowedOrigins为"*"时，allowCredentials必须为false
+                .allowCredentials(true) // 允许携带认证信息（Authorization等）
                 .maxAge(3600) // 预检请求的有效期，单位秒
                 .exposedHeaders("Content-Type", "Authorization", "X-Requested-With"); // 暴露的响应头
     }
@@ -39,8 +39,8 @@ public class CorsConfig implements WebMvcConfigurer {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 允许的来源
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        // 允许的来源模式
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 
         // 允许的HTTP方法
         configuration.setAllowedMethods(Arrays.asList(
@@ -50,8 +50,8 @@ public class CorsConfig implements WebMvcConfigurer {
         // 允许的请求头
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        // 当允许所有来源时，不允许携带Cookie
-        configuration.setAllowCredentials(false);
+        // 允许携带认证信息（Authorization请求头、Cookie等）
+        configuration.setAllowCredentials(true);
 
         // 暴露的响应头
         configuration.setExposedHeaders(Arrays.asList(
