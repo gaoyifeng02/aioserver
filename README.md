@@ -1,121 +1,381 @@
-# AIO Server
+# AIOServer - Java DDD架构项目
 
-一个基于Spring Boot的综合性业务服务项目，用于整合和管理各类业务代码，为后续微服务拆分做准备。
+基于DDD（领域驱动设计）六边形架构的Java后端项目，集成了微信服务、用户认证和博客管理功能。
 
-## 项目概述
+## 🏗️ 项目架构
 
-AIO Server是一个单体应用架构项目，旨在统一管理所有业务功能模块。项目采用分层架构设计，提供标准化的API接口和统一的数据返回格式，便于后续进行微服务化改造。
-
-## 技术栈
-
-- **Java 8** - 主要编程语言
-- **Spring Boot 2.3.12** - 应用框架
-- **Maven** - 项目构建工具
-- **Lombok** - 代码简化工具
-
-## 项目结构
-
+采用**简化DDD六边形架构**，分层清晰：
 ```
-src/main/java/com/gaoyifeng/aioserver/
-├── AioserverApplication.java          # 应用程序启动类
-├── trigger/                           # 触发器层（控制器）
-│   └── DemoController.java           # 演示控制器
-└── types/common/                      # 通用类型定义
-    ├── Result.java                   # 统一返回结果封装
-    ├── ResultCode.java               # 结果代码枚举
-    ├── PageRequest.java              # 分页请求参数
-    └── PageResult.java               # 分页结果封装
+aioserver/
+├── api/                    # API层（接口定义）
+├── trigger/                # Trigger层（HTTP适配器）
+├── domain/                 # Domain层（领域逻辑）
+├── infrastructure/         # Infrastructure层（基础设施）
+└── types/                  # Types层（通用类型）
 ```
 
-## 核心功能
+## 🎯 核心功能
 
-### 1. 统一结果封装
+### 1. **Auth认证域**
+- 用户注册/登录系统
+- 充血模型User实体
+- JWT Token认证
 
-项目提供了完整的API响应封装体系：
+### 2. **Blog博客域**
+- 博文CRUD管理
+- 分类管理
+- 分页查询
 
-- **Result<T>**: 统一的结果返回格式
-- **ResultCode**: 预定义的状态码枚举
-- 支持成功/失败状态的快速构建
-- 提供自定义消息和错误码的能力
+### 3. **Weixin微信域**
+- 微信服务器验证
+- 消息接收处理
+- 自动回复机制
+- **扫码登录功能**（待实现）
 
-### 2. HTTP方法演示
+## 🔧 技术栈
 
-`DemoController` 提供了完整的HTTP方法使用示例：
+- **Spring Boot 3.0.2** + **MySQL** + **MyBatis Plus**
+- **Guava Cache**（缓存）
+- **Retrofit2**（HTTP客户端）
+- **XStream**（XML处理）
 
-- **GET**: 路径参数和查询参数处理
-- **POST**: 请求体和头部参数处理
-- **PUT**: 路径参数、请求体和头部参数处理
-- **DELETE**: 路径参数和头部参数处理
-- **PATCH**: 查询参数、请求体和头部参数处理
+## 📋 项目限制条件
 
-所有接口都包含：
-- 完整的参数验证
-- 统一的错误处理
-- 详细的代码注释和使用示例
+### 架构限制
+- **不使用Maven多模块设计** - 保持单体项目结构
+- **不搞复杂的回退实现** - 避免过度复杂的设计
+- **不要创建新的响应类** - 必须使用项目中Types层已有的Result类体系
 
-## 快速开始
+### 技术选择限制
+- **数据库** - 使用名为"aioserver"的数据库
+- **DDD架构** - 必须按照DDD六边形架构进行标准化
+- **统一响应体系** - 使用现有的Result类，不允许创建Response等替代类
+
+## 🚀 快速开始
 
 ### 环境要求
-
-- JDK 1.8+
+- Java 17+
+- MySQL 8.0+
 - Maven 3.6+
 
+### 运行项目
+```bash
+# 克隆项目
+git clone https://github.com/gaoyifeng02/aioserver.git
+cd aioserver
 
-## 开发规范
+# 配置数据库
+# 修改 src/main/resources/application-dev.yml
 
-### 代码结构
+# 启动项目
+mvn spring-boot:run
 
-- **trigger**: 控制器层，处理HTTP请求
-- **types**: 数据类型定义，包含DTO、VO等
-- **service**: 业务逻辑层（待扩展）
-- **repository**: 数据访问层（待扩展）
-
-### 响应格式
-
-所有API接口统一使用 `Result<T>` 格式返回：
-
-```json
-{
-  "code": "200",
-  "info": "success",
-  "data": {
-    // 具体数据内容
-  }
-}
+# 访问接口
+curl http://localhost:10001/api/v1/idaas/auth/login
 ```
 
-### 错误处理
+## 📱 微信扫码登录分析
 
-- 参数验证使用预定义的错误码
-- 支持自定义错误消息
-- 统一的异常处理机制
+### 核心流程
 
-## 未来规划
+微信扫码登录完整流程包括：
 
-1. **业务模块扩展**: 逐步添加各类业务功能模块
-2. **数据持久化**: 集成数据库访问层
-3. **安全认证**: 添加用户认证和授权机制
-4. **微服务拆分**: 根据业务边界进行服务拆分
-5. **容器化部署**: 支持Docker容器化部署
-6. **监控告警**: 集成应用监控和日志系统
+```mermaid
+graph TD
+    A[前端请求二维码] --> B[生成ticket并缓存]
+    B --> C[前端显示二维码]
+    C --> D[用户扫码确认]
+    D --> E[微信回调处理]
+    E --> F[获取用户信息]
+    F --> G[创建/更新用户]
+    G --> H[生成登录token]
+    H --> I[前端获取登录状态]
+```
 
-## 贡献指南
+### 关键接口设计
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+1. **生成二维码接口**
+   ```java
+   GET /api/v1/login/weixin_qrcode_ticket
+   // 返回：ticket用于生成二维码
+   ```
+
+2. **检查登录状态接口**
+   ```java
+   GET /api/v1/login/check_login?ticket=xxx
+   // 返回：登录状态和用户token
+   ```
+
+3. **微信回调接口**
+   ```java
+   GET /api/v1/weixin/portal/callback?code=xxx&state=xxx
+   // 处理：微信授权回调，完成登录
+   ```
+
+### 核心实现技术
+
+- **二维码生成机制**：使用Snowflake算法生成唯一ticket，存入缓存设置过期时间
+- **登录状态管理**：ticket作为临时标识，关联登录状态，前端轮询检查
+- **微信授权流程**：通过code获取access_token，再获取用户信息，创建/更新用户
+
+### 文件结构参考
+
+完整的扫码登录实现在study项目中：
+```
+study/s-pay-mall-ddd/
+├── LoginController.java (接口入口)
+├── WeixinLoginService.java (业务逻辑)
+├── LoginPort.java (技术实现)
+└── WeixinQrCode*.java (数据模型)
+```
+
+### 当前状态
+
+- ✅ **已实现**：微信公众号消息处理、签名验证、XML消息解析
+- ❌ **待实现**：主项目中的扫码登录功能（study项目中有完整参考）
+- 🎯 **下一步**：将study项目的扫码登录逻辑迁移到主项目
+
+详细分析见：[微信扫码登录分析文档.md](./微信扫码登录分析文档.md)
+
+## 🛠️ 开发工具
+
+### OpenSpec - 规范驱动开发
+
+OpenSpec是一个用于规范驱动开发的AI编程助手工具，帮助团队通过结构化的方式管理需求、设计变更和实施跟踪。
+
+#### 安装OpenSpec
+
+```bash
+# 使用npm全局安装
+npm install -g openspec
+
+# 或使用yarn
+yarn global add openspec
+
+# 验证安装
+openspec --version
+```
+
+#### OpenSpec核心功能
+
+1. **变更提案管理**
+   - 创建结构化的功能提案
+   - 跟踪需求和设计变更
+   - 维护实施检查清单
+
+2. **规范管理**
+   - 定义功能需求和验收标准
+   - 管理技术设计文档
+   - 版本控制和归档
+
+3. **工作流集成**
+   - 三阶段开发流程（提案→实施→归档）
+   - Git集成和PR管理
+   - 自动验证和检查
+
+#### OpenSpec命令
+
+```bash
+# 基本命令
+openspec list                  # 列出活动变更
+openspec list --specs          # 列出规范
+openspec show [item]           # 显示变更或规范
+openspec validate [item]       # 验证变更或规范
+openspec archive <change-id>   # 归档完成的变更
+
+# 项目管理
+openspec init [path]           # 初始化 OpenSpec
+openspec update [path]         # 更新指令文件
+
+# 交互模式
+openspec show                  # 提示选择
+openspec validate              # 批量验证模式
+```
+
+#### OpenSpec目录结构
+
+```
+openspec/
+├── project.md              # 项目约定
+├── specs/                  # 当前事实 - 已构建的内容
+│   └── [capability]/       # 单一专注功能
+│       ├── spec.md         # 需求和场景
+│       └── design.md       # 技术模式
+├── changes/                # 提案 - 应该改变什么
+│   ├── [change-name]/
+│   │   ├── proposal.md     # 为什么、什么、影响
+│   │   ├── tasks.md        # 实施检查清单
+│   │   ├── design.md       # 技术决策（可选）
+│   │   └── specs/          # 增量变更
+│   └── archive/            # 已完成的变更
+```
+
+### Claude Code - AI编程助手
+
+Claude Code是Anthropic官方的CLI编程助手，提供智能代码生成、调试和项目管理功能。
+
+#### 安装Claude Code
+
+```bash
+# 使用npm全局安装
+npm install -g @anthropic-ai/claude-code
+
+# 或使用yarn
+yarn global add @anthropic-ai/claude-code
+
+# 验证安装
+claude-code --version
+
+# 初始化项目
+claude-code init
+```
+
+#### Claude Code核心功能
+
+1. **智能代码生成**
+   - 基于需求自动生成代码
+   - 支持多种编程语言和框架
+   - 遵循项目编码规范
+
+2. **项目管理**
+   - 自动分析项目结构
+   - 依赖管理和版本控制
+   - 任务规划和进度跟踪
+
+3. **调试和优化**
+   - 智能错误诊断
+   - 性能分析和优化建议
+   - 代码重构和改进
+
+#### Claude Code命令
+
+```bash
+# 基本命令
+claude-code init             # 初始化项目
+claude-code run              # 运行项目
+claude-code test             # 运行测试
+claude-code build            # 构建项目
+
+# 开发辅助
+claude-code generate         # 生成代码
+claude-code refactor         # 重构代码
+claude-code optimize         # 优化代码
+claude-code debug            # 调试问题
+
+# 项目管理
+claude-code status           # 查看项目状态
+claude-code plan             # 制定开发计划
+claude-code review           # 代码审查
+```
+
+## 🔧 开发环境配置
+
+### 数据库配置
+
+```yaml
+# application-dev.yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/aioserver
+    username: root
+    password: 123456
+```
+
+### 微信配置
+
+```yaml
+weixin:
+  config:
+    token: your-weixin-token
+    originalid: your-original-id
+    appid: your-appid
+    appsecret: your-appsecret
+```
+
+## 📊 API接口清单
+
+### 认证接口
+```bash
+POST /api/v1/idaas/auth/register    # 用户注册
+POST /api/v1/idaas/auth/login       # 用户登录
+GET  /api/v1/idaas/auth/getUserInfo  # 获取用户信息
+```
+
+### 博客接口
+```bash
+POST /api/v1/blog/add               # 添加博客
+GET  /api/v1/blog/getList          # 获取博客列表
+PUT  /api/v1/blog/edit             # 编辑博客
+DELETE /api/v1/blog/delete          # 删除博客
+```
+
+### 分类接口
+```bash
+POST /api/v1/category/add          # 添加分类
+GET  /api/v1/category/getList       # 获取分类列表
+PUT  /api/v1/category/edit          # 编辑分类
+DELETE /api/v1/category/delete      # 删除分类
+```
+
+### 微信接口
+```bash
+GET  /api/v1/weixin/portal/receive  # 微信服务器验证
+POST /api/v1/weixin/portal/receive  # 接收微信消息
+```
+
+## 🎯 开发指南
+
+### 代码规范
+1. **严格遵循DDD分层架构**
+2. **使用统一Result响应体系**
+3. **实现充血模型设计**
+4. **遵循Port/Adapter模式**
+
+### 提交规范
+```bash
+# 功能开发
+git commit -m "feat: 添加用户认证功能"
+
+# 问题修复
+git commit -m "fix: 修复跨域配置问题"
+
+# 文档更新
+git commit -m "docs: 更新API文档"
+```
+
+### 分支策略
+- `main` - 主分支，生产环境代码
+- `feature-*` - 功能开发分支
+- `hotfix-*` - 紧急修复分支
+
+## 📝 待办事项
+
+- [ ] 迁移微信扫码登录功能到主项目
+- [ ] 完善Token安全机制（JWT实现）
+- [ ] 添加单元测试和集成测试
+- [ ] 集成Redis缓存
+- [ ] 添加API文档（Swagger）
+- [ ] 实现WebSocket推送登录状态
+
+## 🤝 贡献指南
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
+5. 开启 Pull Request
 
-## 许可证
+## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
-## 联系方式
+## 📞 联系方式
 
-- 作者: 高艺峰
-- 项目地址: [GitHub Repository]
+如有问题或建议，请通过以下方式联系：
+
+- 提交 Issue
+- 发送邮件至：gaoyifeng@example.com
 
 ---
 
-**注意**: 这是一个过渡阶段的单体项目，主要用于业务功能的快速开发和验证。后续会根据业务发展需要进行微服务化改造。
+*基于DDD架构设计，集成现代Java技术栈，为微信生态提供完整的后端服务支持。*
