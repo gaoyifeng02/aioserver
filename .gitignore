@@ -35,3 +35,4 @@ build/
 .vscode/
 study/
 .claude/settings.local.json
+src/main/resources/application-prod.yml
