@@ -154,7 +154,37 @@ yarn global add openspec
 
 # 验证安装
 openspec --version
+
+# 初始化项目
+openspec init
 ```
+
+#### OpenSpec基本使用
+
+1. **查看项目状态**
+   ```bash
+   openspec list                  # 列出所有活动变更
+   openspec list --specs          # 列出所有功能规范
+   openspec show [item]           # 查看具体变更或规范的详细信息
+   ```
+
+2. **创建新功能提案**
+   ```bash
+   # 创建新的变更提案（推荐使用verb-noun格式）
+   CHANGE=add-weixin-qr-code-login
+   mkdir -p openspec/changes/$CHANGE
+   ```
+
+3. **验证规范**
+   ```bash
+   openspec validate [change-id] --strict    # 严格验证变更
+   openspec validate --strict                # 验证所有变更
+   ```
+
+4. **归档完成的变更**
+   ```bash
+   openspec archive <change-id> --yes        # 归档已完成的变更
+   ```
 
 #### OpenSpec核心功能
 
@@ -229,6 +259,36 @@ claude-code --version
 # 初始化项目
 claude-code init
 ```
+
+#### Claude Code基本使用
+
+1. **项目管理**
+   ```bash
+   claude-code init             # 初始化项目配置
+   claude-code status           # 查看项目状态
+   claude-code plan             # 制定开发计划
+   ```
+
+2. **代码开发**
+   ```bash
+   claude-code run              # 运行项目
+   claude-code test             # 运行测试
+   claude-code build            # 构建项目
+   ```
+
+3. **智能辅助**
+   ```bash
+   claude-code generate         # 基于需求生成代码
+   claude-code refactor         # 重构优化代码
+   claude-code debug            # 智能调试问题
+   claude-code review           # 代码审查
+   ```
+
+4. **交互模式**
+   ```bash
+   claude-code                  # 进入交互模式，可直接对话
+   /help                        # 查看帮助命令
+   ```
 
 #### Claude Code核心功能
 
