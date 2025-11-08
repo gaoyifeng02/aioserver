@@ -45,13 +45,13 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ### 1. DDD标准化
 - **学习参考项目s-pay-mall-ddd** - 按照其DDD架构模式标准化
-- **六边形架构分层** - API、Trigger、App、Domain、Infrastructure、Types
+- **六边形架构分层** - API、Trigger、Domain、Infrastructure、Types
 - **Port/Adapter模式** - 实现依赖倒置原则
 - **API层设计** - Trigger层实现API层的接口
 
 ### 2. 技术栈补齐
 - **数据库集成** - MySQL + MyBatis
-- **缓存支持** - Guava Cache
+- **缓存支持** - Guava Cache 不建议多使用缓存
 - **HTTP客户端** - Retrofit2
 - **配置管理** - 环境配置和参数管理
 
@@ -77,6 +77,39 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - **严禁创建新类型** - 必须使用项目中已有的类（如Result类）
 - **修改前确认** - 任何修改前都必须获得明确同意
 - **保持简洁** - 避免过度工程化和不必要的复杂性
+
+## 项目运行管理
+
+### 🚀 启动项目
+每次完成需求开发后，必须通过以下命令启动项目验证功能正常运行：
+
+```bash
+mvn spring-boot:run
+```
+
+### 🛑 停止项目
+验证完成后，使用以下命令停止项目：
+
+```bash
+# 查找占用端口10001的进程PID
+netstat -ano | findstr :10001
+
+# 使用PowerShell强制停止进程（将PID替换为实际值）
+powershell "Stop-Process -Id [PID] -Force"
+```
+
+### 📋 开发流程规范
+1. **需求分析** → 理解需求并制定修改规划
+2. **获得确认** → 等待用户同意修改方案
+3. **代码实现** → 按照DDD架构和项目规范编码
+4. **启动验证** → 运行 `mvn spring-boot:run` 确保项目正常启动
+5. **停止项目** → 验证完成后停止应用
+6. **完成开发** → 开发流程结束
+
+### 🔧 环境信息
+- **Java版本**：21
+- **Spring Boot版本**：3.1.5
+- **服务端口**：10001
 
 ## API规范
 
