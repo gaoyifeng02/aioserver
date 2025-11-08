@@ -97,6 +97,40 @@ public class UserRepositoryImpl implements IUserRepository {
         }
     }
 
+    @Override
+    public User findByWeixinOpenId(String weixinOpenId) {
+        try {
+            if (weixinOpenId == null || weixinOpenId.trim().isEmpty()) {
+                return null;
+            }
+
+            // TODO: 实际实现需要数据库支持微信OpenID字段
+            // 暂时返回null，等后续数据库结构完善
+            log.debug("根据微信OpenID查找用户：{}", weixinOpenId);
+            return null;
+        } catch (Exception e) {
+            log.error("根据微信OpenID查找用户异常：{}", weixinOpenId, e);
+            return null;
+        }
+    }
+
+    @Override
+    public boolean existsByWeixinOpenId(String weixinOpenId) {
+        try {
+            if (weixinOpenId == null || weixinOpenId.trim().isEmpty()) {
+                return false;
+            }
+
+            // TODO: 实际实现需要数据库支持微信OpenID字段
+            // 暂时返回false，等后续数据库结构完善
+            log.debug("检查微信OpenID是否存在：{}", weixinOpenId);
+            return false;
+        } catch (Exception e) {
+            log.error("检查微信OpenID是否存在异常：{}", weixinOpenId, e);
+            return false;
+        }
+    }
+
     /**
      * 将PO转换为Entity
      */

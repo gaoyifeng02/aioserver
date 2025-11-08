@@ -41,4 +41,18 @@ public interface IUserRepository {
      * @return 是否存在
      */
     boolean existsById(String id);
+
+    /**
+     * 根据微信OpenID查找用户
+     * @param weixinOpenId 微信OpenID
+     * @return 用户实体，如果不存在返回null
+     */
+    User findByWeixinOpenId(String weixinOpenId);
+
+    /**
+     * 根据微信OpenID判断用户是否存在
+     * @param weixinOpenId 微信OpenID
+     * @return 是否存在
+     */
+    boolean existsByWeixinOpenId(String weixinOpenId);
 }

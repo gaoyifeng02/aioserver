@@ -86,7 +86,9 @@ weixin:
 ---
 # 测试环境配置
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
 
 weixin:
   config:
@@ -96,7 +98,9 @@ weixin:
 ---
 # 生产环境配置
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
 
 weixin:
   config:

@@ -33,4 +33,24 @@ public interface IWeixinApiPort {
      * @return 验证结果
      */
     boolean verifySignature(String signature, String timestamp, String nonce, String token);
+
+    // ==================== 微信登录相关方法 ====================
+
+    /**
+     * 创建微信登录二维码
+     * 供认证域的登录服务调用
+     * @param ticket 登录票据
+     * @return 二维码URL
+     * @throws Exception 创建失败时抛出异常
+     */
+    String createLoginQrCode(String ticket) throws Exception;
+
+    /**
+     * 发送登录成功模板消息
+     * @param openId 用户OpenID
+     * @param nickname 用户昵称（可选）
+     * @return 发送结果
+     * @throws Exception 发送失败时抛出异常
+     */
+    boolean sendLoginSuccessTemplate(String openId, String nickname) throws Exception;
 }

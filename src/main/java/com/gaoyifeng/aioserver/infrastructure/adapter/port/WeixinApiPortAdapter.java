@@ -1,8 +1,10 @@
 package com.gaoyifeng.aioserver.infrastructure.adapter.port;
 
 import com.gaoyifeng.aioserver.domain.weixin.adapter.port.IWeixinApiPort;
+import com.gaoyifeng.aioserver.infrastructure.config.WeixinConfig;
 import com.gaoyifeng.aioserver.infrastructure.util.SignatureUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class WeixinApiPortAdapter implements IWeixinApiPort {
+
+    @Autowired
+    private WeixinConfig weixinConfig;
 
     @Override
     public boolean sendTemplateMessage(String openId, String templateId, String data) {
@@ -58,6 +63,68 @@ public class WeixinApiPortAdapter implements IWeixinApiPort {
         } catch (Exception e) {
             log.error("微信签名验证异常", e);
             return false;
+        }
+    }
+
+    // ==================== 微信登录相关方法 ====================
+
+    @Override
+    public String createLoginQrCode(String ticket) throws Exception {
+        try {
+            log.info("创建微信登录二维码，ticket：{}",
+                    ticket != null ? ticket.substring(0, Math.min(8, ticket.length())) + "..." : "null");
+
+            if (ticket == null || ticket.trim().isEmpty()) {
+                throw new IllegalArgumentException("登录票据不能为空");
+            }
+
+            // TODO: 实际的微信二维码创建API调用
+            // 这里应该调用微信API创建临时二维码
+            // 目前返回模拟的二维码URL
+            String qrCodeUrl = String.format("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s", ticket);
+
+            log.info("微信登录二维码创建成功，ticket：{}, url长度：{}",
+                    ticket.substring(0, Math.min(8, ticket.length())) + "...",
+                    qrCodeUrl.length());
+
+            return qrCodeUrl;
+
+        } catch (Exception e) {
+            log.error("创建微信登录二维码失败，ticket：{}",
+                    ticket != null ? ticket.substring(0, Math.min(8, ticket.length())) + "..." : "null", e);
+            throw new Exception("创建微信登录二维码失败：" + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean sendLoginSuccessTemplate(String openId, String nickname) throws Exception {
+        try {
+            log.info("发送登录成功模板消息，openId：{}, nickname：{}",
+                    openId != null ? openId.substring(0, Math.min(8, openId.length())) + "..." : "null",
+                    nickname);
+
+            if (openId == null || openId.trim().isEmpty()) {
+                throw new IllegalArgumentException("用户OpenID不能为空");
+            }
+
+            // TODO: 实际的微信模板消息发送
+            // 这里应该调用微信API发送模板消息
+            // 暂时模拟发送成功
+            String templateId = weixinConfig.getLoginSuccessTemplateId();
+            if (templateId != null && !templateId.trim().isEmpty()) {
+                log.info("发送登录成功模板消息，templateId：{}, openId：{}", templateId,
+                        openId.substring(0, Math.min(8, openId.length())) + "...");
+                return true;
+            } else {
+                log.warn("登录成功模板消息ID未配置，跳过发送");
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("发送登录成功模板消息失败，openId：{}, nickname：{}",
+                    openId != null ? openId.substring(0, Math.min(8, openId.length())) + "..." : "null",
+                    nickname, e);
+            throw new Exception("发送登录成功模板消息失败：" + e.getMessage(), e);
         }
     }
 }
