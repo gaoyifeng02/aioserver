@@ -3,10 +3,11 @@ package com.gaoyifeng.aioserver.domain.auth.service;
 import com.gaoyifeng.aioserver.domain.auth.adapter.port.IUserRepository;
 import com.gaoyifeng.aioserver.domain.auth.adapter.port.IWeixinLoginPort;
 import com.gaoyifeng.aioserver.domain.auth.model.entity.User;
+import com.gaoyifeng.aioserver.types.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 /**
@@ -63,7 +64,7 @@ public class WeixinLoginService {
             log.info("检查微信登录状态：ticket={}",
                     ticket != null ? ticket.substring(0, Math.min(8, ticket.length())) + "..." : "null");
 
-            if (ticket == null || ticket.trim().isEmpty()) {
+            if (StringUtils.isEmpty(ticket)) {
                 log.warn("登录票据为空");
                 return null;
             }
@@ -71,7 +72,7 @@ public class WeixinLoginService {
             // 通过端口检查登录状态
             String openId = weixinLoginPort.getLoginStatus(ticket);
 
-            if (openId != null && !openId.trim().isEmpty()) {
+            if (StringUtils.isNotEmpty(openId)) {
                 log.info("微信登录状态：已登录，openId={}",
                         openId.substring(0, Math.min(8, openId.length())) + "...");
             } else {
@@ -104,10 +105,10 @@ public class WeixinLoginService {
                     openId != null ? openId.substring(0, Math.min(8, openId.length())) + "..." : "null");
 
             // 参数验证
-            if (ticket == null || ticket.trim().isEmpty()) {
+            if (StringUtils.isEmpty(ticket)) {
                 throw new IllegalArgumentException("登录票据不能为空");
             }
-            if (openId == null || openId.trim().isEmpty()) {
+            if (StringUtils.isEmpty(openId)) {
                 throw new IllegalArgumentException("用户OpenID不能为空");
             }
 

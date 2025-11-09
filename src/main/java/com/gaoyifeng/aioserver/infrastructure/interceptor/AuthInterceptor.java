@@ -26,6 +26,11 @@ public class AuthInterceptor implements HandlerInterceptor {
     private static final String[] WHITE_LIST = {
             "/api/v1/idaas/auth/login",
             "/api/v1/idaas/auth/register",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/weixin/qrcode",
+            "/api/v1/auth/weixin/check",
+            "/api/v1/auth/weixin/callback",
     };
 
     @Override

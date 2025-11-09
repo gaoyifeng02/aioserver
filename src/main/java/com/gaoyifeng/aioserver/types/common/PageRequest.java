@@ -1,8 +1,10 @@
 package com.gaoyifeng.aioserver.types.common;
 
+import com.gaoyifeng.aioserver.types.util.StringUtils;
+
 /**
  * 分页请求数据传输对象
- * 
+ *
  * @author 高艺峰
  * @since 2025-01-24
  * @description 通用分页请求参数封装类
@@ -116,7 +118,7 @@ public class PageRequest {
      * @return 是否有排序
      */
     public boolean hasSort() {
-        return sortBy != null && !sortBy.trim().isEmpty();
+        return StringUtils.isNotEmpty(sortBy);
     }
 
     /**
@@ -125,7 +127,7 @@ public class PageRequest {
      * @return 是否有搜索关键字
      */
     public boolean hasKeyword() {
-        return keyword != null && !keyword.trim().isEmpty();
+        return StringUtils.isNotEmpty(keyword);
     }
 
     /**

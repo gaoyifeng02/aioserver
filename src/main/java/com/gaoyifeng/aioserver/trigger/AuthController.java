@@ -14,6 +14,7 @@ import com.gaoyifeng.aioserver.domain.auth.service.UserAuthService;
 import com.gaoyifeng.aioserver.domain.auth.service.WeixinLoginService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
+import com.gaoyifeng.aioserver.types.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController implements IAuthService {
+
+    private static final String WEIXIN_QRCODE_URL_TEMPLATE = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s";
 
     @Autowired
     private UserAuthService userAuthService;
@@ -57,10 +60,10 @@ public class AuthController implements IAuthService {
             String username = loginDto.getUsername();
             String password = loginDto.getPassword();
 
-            if (username == null || username.trim().isEmpty()) {
+            if (StringUtils.isEmpty(username)) {
                 return Result.fail(ResultCode.PARAM_ERROR, "用户名不能为空");
             }
-            if (password == null || password.trim().isEmpty()) {
+            if (StringUtils.isEmpty(password)) {
                 return Result.fail(ResultCode.PARAM_ERROR, "密码不能为空");
             }
 
@@ -104,10 +107,10 @@ public class AuthController implements IAuthService {
             String username = registerDto.getUsername();
             String password = registerDto.getPassword();
 
-            if (username == null || username.trim().isEmpty()) {
+            if (StringUtils.isEmpty(username)) {
                 return Result.fail(ResultCode.PARAM_ERROR, "用户名不能为空");
             }
-            if (password == null || password.trim().isEmpty()) {
+            if (StringUtils.isEmpty(password)) {
                 return Result.fail(ResultCode.PARAM_ERROR, "密码不能为空");
             }
 
@@ -142,7 +145,7 @@ public class AuthController implements IAuthService {
 
             // 从请求头获取token
             String token = request.getHeader("Authorization");
-            if (token == null || token.trim().isEmpty()) {
+            if (StringUtils.isEmpty(token)) {
                 log.warn("请求头中缺少token");
                 return Result.fail(ResultCode.BUSINESS_ERROR, "请先登录");
             }
@@ -154,7 +157,7 @@ public class AuthController implements IAuthService {
 
             // 直接使用token作为userId
             String userId = token;
-            if (userId == null || userId.trim().isEmpty()) {
+            if (StringUtils.isEmpty(userId)) {
                 log.warn("token为空");
                 return Result.fail(ResultCode.BUSINESS_ERROR, "用户认证失败");
             }
@@ -194,7 +197,8 @@ public class AuthController implements IAuthService {
 
             // 调用服务层生成二维码
             String ticket = weixinLoginService.createLoginQrCode();
-            String qrCodeUrl = String.format("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s", ticket);
+
+            String qrCodeUrl = String.format(WEIXIN_QRCODE_URL_TEMPLATE, ticket);
 
             // 创建响应DTO
             LoginQrCodeResponseDto responseDto = new LoginQrCodeResponseDto(ticket, qrCodeUrl, 300);
@@ -232,7 +236,7 @@ public class AuthController implements IAuthService {
             // 调用服务层检查登录状态
             String openId = weixinLoginService.checkLoginStatus(request.getTicket());
 
-            if (openId != null && !openId.trim().isEmpty()) {
+            if (StringUtils.isNotEmpty(openId)) {
                 // 登录成功，生成token并返回
                 String token = generateWeixinLoginToken(openId);
                 LoginCheckResponseDto responseDto = LoginCheckResponseDto.loggedIn(openId, token);
