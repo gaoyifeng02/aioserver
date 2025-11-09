@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/idaas/auth")
 public class AuthController implements IAuthService {
 
     private static final String WEIXIN_QRCODE_URL_TEMPLATE = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s";
