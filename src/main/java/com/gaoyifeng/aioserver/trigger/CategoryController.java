@@ -5,7 +5,8 @@ import com.gaoyifeng.aioserver.api.dto.cate.request.CateAddRequestDto;
 import com.gaoyifeng.aioserver.api.dto.cate.request.CateDeleteRequestDto;
 import com.gaoyifeng.aioserver.api.dto.cate.request.CateEditRequestDto;
 import com.gaoyifeng.aioserver.api.dto.cate.response.CateGetListResponseDto;
-import com.gaoyifeng.aioserver.app.CategoryApplicationService;
+import com.gaoyifeng.aioserver.domain.blog.model.entity.Category;
+import com.gaoyifeng.aioserver.domain.blog.service.CategoryService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 分类控制器 - DDD架构实现
@@ -25,7 +27,7 @@ import java.util.List;
 public class CategoryController implements ICateService {
 
     @Resource
-    private CategoryApplicationService categoryApplicationService;
+    private CategoryService categoryService;
 
     /**
      * 创建分类 - RESTful POST
@@ -42,7 +44,7 @@ public class CategoryController implements ICateService {
                 return Result.fail("分类名称不能为空");
             }
 
-            categoryApplicationService.createCategory(cateAddRequestDto.getCateName());
+            categoryService.createCategory(cateAddRequestDto.getCateName());
             log.info("添加分类成功：cateName={}", cateAddRequestDto.getCateName());
             return Result.success();
         } catch (IllegalArgumentException e) {
@@ -76,7 +78,7 @@ public class CategoryController implements ICateService {
             }
 
             cateEditRequestDto.setId(id);
-            categoryApplicationService.updateCategory(cateEditRequestDto.getId(), cateEditRequestDto.getCateName());
+            categoryService.updateCategory(cateEditRequestDto.getId(), cateEditRequestDto.getCateName());
             log.info("编辑分类成功：id={}, cateName={}", id, cateEditRequestDto.getCateName());
             return Result.success();
         } catch (IllegalArgumentException e) {
@@ -102,12 +104,11 @@ public class CategoryController implements ICateService {
 
             // 如果提供了批量删除请求，则执行批量删除
             if (cateDeleteRequestDto != null && cateDeleteRequestDto.getIds() != null && !cateDeleteRequestDto.getIds().isEmpty()) {
-                categoryApplicationService.deleteCategories(cateDeleteRequestDto.getIds());
+                categoryService.deleteCategories(cateDeleteRequestDto.getIds());
                 log.info("批量删除分类成功：ids={}", cateDeleteRequestDto.getIds());
             } else {
                 // 否则执行单个删除
-                java.util.List<String> singleId = java.util.Arrays.asList(id);
-                categoryApplicationService.deleteCategories(singleId);
+                categoryService.deleteCategory(id);
                 log.info("单个删除分类成功：id={}", id);
             }
 
@@ -131,12 +132,23 @@ public class CategoryController implements ICateService {
         try {
             log.info("接收到获取分类列表请求");
 
-            List<CateGetListResponseDto> categories = categoryApplicationService.getAllCategories();
+            List<Category> categories = categoryService.getAllCategories();
+            List<CateGetListResponseDto> responseDtoList = categories.stream()
+                    .map(this::convertToResponseDto)
+                    .collect(Collectors.toList());
             log.info("获取分类列表成功，数量：{}", categories != null ? categories.size() : 0);
-            return Result.success(categories);
+            return Result.success(responseDtoList);
         } catch (Exception e) {
             log.error("获取分类列表异常", e);
             return Result.fail("获取分类列表失败");
         }
+    }
+
+    private CateGetListResponseDto convertToResponseDto(Category category) {
+        CateGetListResponseDto dto = new CateGetListResponseDto();
+        dto.setId(category.getId());
+        dto.setCateName(category.getCateName());
+        dto.setBlogNum(category.getBlogNum() != null ? category.getBlogNum().toString() : "0");
+        return dto;
     }
 }

@@ -6,13 +6,18 @@ import com.gaoyifeng.aioserver.api.dto.blog.request.BlogDeleteRequestDto;
 import com.gaoyifeng.aioserver.api.dto.blog.request.BlogEditRequestDto;
 import com.gaoyifeng.aioserver.api.dto.blog.request.BlogGetListRequestDto;
 import com.gaoyifeng.aioserver.api.dto.blog.response.BlogPageResponseDto;
-import com.gaoyifeng.aioserver.app.BlogApplicationService;
+import com.gaoyifeng.aioserver.api.dto.blog.response.BlogGetListResponseDto;
+import com.gaoyifeng.aioserver.domain.blog.model.entity.Blog;
+import com.gaoyifeng.aioserver.domain.blog.service.BlogService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 博客控制器 - DDD架构实现
@@ -25,7 +30,9 @@ import jakarta.annotation.Resource;
 public class BlogController implements IBlogService {
 
     @Resource
-    private BlogApplicationService blogApplicationService;
+    private BlogService blogService;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 创建博客 - RESTful POST
@@ -52,7 +59,13 @@ public class BlogController implements IBlogService {
                 return Result.fail("分类ID不能为空");
             }
 
-            blogApplicationService.createBlog(blogAddRequestDto);
+            blogService.createBlog(
+                    blogAddRequestDto.getTitle(),
+                    blogAddRequestDto.getCateId(),
+                    blogAddRequestDto.getCoverImg(),
+                    blogAddRequestDto.getContent(),
+                    blogAddRequestDto.getState()
+            );
             log.info("添加博客成功：title={}", blogAddRequestDto.getTitle());
             return Result.success();
         } catch (IllegalArgumentException e) {
@@ -96,7 +109,14 @@ public class BlogController implements IBlogService {
             }
 
             blogEditRequestDto.setId(id);
-            blogApplicationService.updateBlog(blogEditRequestDto);
+            blogService.updateBlog(
+                    id,
+                    blogEditRequestDto.getTitle(),
+                    blogEditRequestDto.getCateId(),
+                    blogEditRequestDto.getCoverImg(),
+                    blogEditRequestDto.getContent(),
+                    blogEditRequestDto.getState()
+            );
             log.info("编辑博客成功：id={}, title={}", id, blogEditRequestDto.getTitle());
             return Result.success();
         } catch (IllegalArgumentException e) {
@@ -122,12 +142,11 @@ public class BlogController implements IBlogService {
 
             // 如果提供了批量删除请求，则执行批量删除
             if (blogDeleteRequestDto != null && blogDeleteRequestDto.getIds() != null && !blogDeleteRequestDto.getIds().isEmpty()) {
-                blogApplicationService.deleteBlogs(blogDeleteRequestDto.getIds());
+                blogService.deleteBlogs(blogDeleteRequestDto.getIds());
                 log.info("批量删除博客成功：ids={}", blogDeleteRequestDto.getIds());
             } else {
                 // 否则执行单个删除
-                java.util.List<String> singleId = java.util.Arrays.asList(id);
-                blogApplicationService.deleteBlogs(singleId);
+                blogService.deleteBlog(id);
                 log.info("单个删除博客成功：id={}", id);
             }
 
@@ -161,13 +180,48 @@ public class BlogController implements IBlogService {
                 blogGetListRequestDto = new BlogGetListRequestDto();
             }
 
-            BlogPageResponseDto pageResponse = blogApplicationService.getBlogsByPage(blogGetListRequestDto);
+            List<Blog> blogs = blogService.getBlogsByPage(
+                    blogGetListRequestDto.getPage(),
+                    blogGetListRequestDto.getPageSize(),
+                    blogGetListRequestDto.getCateId(),
+                    blogGetListRequestDto.getTitle(),
+                    blogGetListRequestDto.getState()
+            );
+
+            Long total = blogService.countBlogs(
+                    blogGetListRequestDto.getCateId(),
+                    blogGetListRequestDto.getTitle(),
+                    blogGetListRequestDto.getState()
+            );
+
+            BlogPageResponseDto pageResponse = new BlogPageResponseDto();
+            pageResponse.setRecords(blogs.stream()
+                    .map(this::convertToResponseDto)
+                    .collect(Collectors.toList()));
+            pageResponse.setTotal(total);
+            pageResponse.setPages((total + blogGetListRequestDto.getPageSize() - 1) / blogGetListRequestDto.getPageSize());
+            pageResponse.setCurrent(blogGetListRequestDto.getPage());
+            pageResponse.setSize(blogGetListRequestDto.getPageSize());
             log.info("获取博客列表成功，总数：{}", pageResponse != null ? pageResponse.getTotal() : 0);
             return Result.success(pageResponse);
         } catch (Exception e) {
             log.error("获取博客列表异常", e);
             return Result.fail("获取博客列表失败");
         }
+    }
+
+    private BlogGetListResponseDto convertToResponseDto(Blog blog) {
+        BlogGetListResponseDto dto = new BlogGetListResponseDto();
+        dto.setId(blog.getId());
+        dto.setTitle(blog.getTitle());
+        dto.setCateId(blog.getCateId());
+        dto.setCateName(blog.getCateName());
+        dto.setCoverImg(blog.getCoverImg());
+        dto.setContent(blog.getContent());
+        dto.setState(blog.getState());
+        dto.setCreateTime(blog.getCreateTime() != null ? blog.getCreateTime().format(DATE_FORMATTER) : null);
+        dto.setUpdateTime(blog.getUpdateTime() != null ? blog.getUpdateTime().format(DATE_FORMATTER) : null);
+        return dto;
     }
 
 }
