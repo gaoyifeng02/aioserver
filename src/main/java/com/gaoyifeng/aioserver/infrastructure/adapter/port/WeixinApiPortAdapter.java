@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.adapter.port;
 
 import com.gaoyifeng.aioserver.domain.weixin.adapter.port.IWeixinApiPort;
-import com.gaoyifeng.aioserver.infrastructure.config.WeixinConfig;
+import com.gaoyifeng.aioserver.app.config.WeixinConfig;
 import com.gaoyifeng.aioserver.infrastructure.gateway.IWeixinApiGateway;
 import com.gaoyifeng.aioserver.infrastructure.gateway.dto.WeixinQrCodeRequestDTO;
 import com.gaoyifeng.aioserver.infrastructure.gateway.dto.WeixinQrCodeResponseDTO;

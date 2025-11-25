@@ -6,7 +6,7 @@ import com.gaoyifeng.aioserver.domain.weixin.model.aggregate.MessageConversation
 import com.gaoyifeng.aioserver.domain.weixin.adapter.port.IMessageRepositoryPort;
 import com.gaoyifeng.aioserver.domain.weixin.service.SignatureService;
 import com.gaoyifeng.aioserver.domain.weixin.service.MessageService;
-import com.gaoyifeng.aioserver.infrastructure.config.WeixinConfig;
+import com.gaoyifeng.aioserver.app.config.WeixinConfig;
 import com.gaoyifeng.aioserver.infrastructure.util.XmlUtil;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
