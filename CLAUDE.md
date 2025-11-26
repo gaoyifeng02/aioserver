@@ -21,7 +21,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ## 项目基本信息
 1. 项目采用DDD架构。
-2. /study是你的学习参考项目。
+2. /study是你的学习参考项目，因为现在其实就是对study项目的功能进行搬运，实现的时候可以直接搬运study项目的代码，部分内容进行我的替代。
 3. 每次提问的模式都是：理解我的需求，给我你的修改规划，同意后进行修改。
 
 ## 项目限制条件
