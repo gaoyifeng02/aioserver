@@ -1,7 +1,6 @@
 package com.gaoyifeng.aioserver.trigger;
 
 import com.gaoyifeng.aioserver.api.IAuthService;
-import com.gaoyifeng.aioserver.api.dto.auth.request.LoginCheckRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.LoginRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.RegisterRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.response.LoginResponseDto;
