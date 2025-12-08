@@ -4,14 +4,10 @@ import com.gaoyifeng.aioserver.api.IAuthService;
 import com.gaoyifeng.aioserver.api.dto.auth.request.LoginCheckRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.LoginRequestDto;
 import com.gaoyifeng.aioserver.api.dto.auth.request.RegisterRequestDto;
-import com.gaoyifeng.aioserver.api.dto.auth.request.WeixinLoginCallbackRequestDto;
-import com.gaoyifeng.aioserver.api.dto.auth.response.LoginCheckResponseDto;
-import com.gaoyifeng.aioserver.api.dto.auth.response.LoginQrCodeResponseDto;
 import com.gaoyifeng.aioserver.api.dto.auth.response.LoginResponseDto;
 import com.gaoyifeng.aioserver.api.dto.auth.response.UserInfoResponseDto;
 import com.gaoyifeng.aioserver.domain.auth.model.entity.User;
 import com.gaoyifeng.aioserver.domain.auth.service.UserAuthService;
-import com.gaoyifeng.aioserver.domain.auth.service.WeixinLoginService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
 import com.gaoyifeng.aioserver.types.util.StringUtils;
@@ -23,23 +19,18 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 认证控制器 - DDD架构实现
- * 实现登录、注册、获取用户信息和微信登录功能
+ * 实现登录、注册、获取用户信息功能
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/idaas/auth")
 public class AuthController implements IAuthService {
 
-    private static final String WEIXIN_QRCODE_URL_TEMPLATE = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s";
-
     @Autowired
     private UserAuthService userAuthService;
 
     @Autowired
     private HttpServletRequest request;
-
-    @Autowired
-    private WeixinLoginService weixinLoginService;
 
     /**
      * 用户登录
@@ -182,136 +173,5 @@ public class AuthController implements IAuthService {
         }
     }
 
-    // ==================== 微信登录相关API ====================
-
-    /**
-     * 生成微信登录二维码
-     * 参考study项目：weixinQrCodeTicket()方法
-     * @return 包含二维码信息的响应结果
-     */
-    @Override
-    @PostMapping("/weixin/qrcode")
-    public Result<LoginQrCodeResponseDto> createWeixinQrCode() {
-        try {
-            log.info("接收到生成微信登录二维码请求");
-
-            // 调用服务层生成二维码
-            String ticket = weixinLoginService.createLoginQrCode();
-
-            String qrCodeUrl = String.format(WEIXIN_QRCODE_URL_TEMPLATE, ticket);
-
-            // 创建响应DTO
-            LoginQrCodeResponseDto responseDto = new LoginQrCodeResponseDto(ticket, qrCodeUrl, 300);
-
-            log.info("微信登录二维码生成成功：ticket={}, qrCodeUrl长度={}",
-                    ticket.substring(0, Math.min(8, ticket.length())) + "...",
-                    qrCodeUrl.length());
-
-            return Result.success(responseDto);
-
-        } catch (Exception e) {
-            log.error("生成微信登录二维码失败", e);
-            return Result.fail(ResultCode.SYSTEM_ERROR, "生成微信登录二维码失败：" + e.getMessage());
-        }
-    }
-
-    /**
-     * 检查微信登录状态
-     * 参考study项目：checkLogin()方法
-     * @param request 登录检查请求（包含ticket）
-     * @return 登录状态检查结果
-     */
-    @Override
-    @PostMapping("/weixin/check")
-    public Result<LoginCheckResponseDto> checkWeixinLogin(@RequestBody LoginCheckRequestDto request) {
-        try {
-            log.info("接收到检查微信登录状态请求：{}",
-                    request != null ? request.getSummary() : "null");
-
-            // 参数验证
-            if (request == null || !request.isValid()) {
-                return Result.fail(ResultCode.PARAM_ERROR, "登录票据不能为空");
-            }
-
-            // 调用服务层检查登录状态
-            String openId = weixinLoginService.checkLoginStatus(request.getTicket());
-
-            if (StringUtils.isNotEmpty(openId)) {
-                // 登录成功，生成token并返回
-                String token = generateWeixinLoginToken(openId);
-                LoginCheckResponseDto responseDto = LoginCheckResponseDto.loggedIn(openId, token);
-
-                log.info("微信登录检查成功：ticket={}, openId={}, token={}",
-                        request.getTicket().substring(0, Math.min(8, request.getTicket().length())) + "...",
-                        openId.substring(0, Math.min(8, openId.length())) + "...",
-                        token.substring(0, Math.min(8, token.length())) + "...");
-
-                return Result.success(responseDto);
-            } else {
-                // 未登录
-                LoginCheckResponseDto responseDto = LoginCheckResponseDto.notLoggedIn("用户尚未扫码或确认登录");
-
-                log.info("微信登录检查结果：未登录，ticket={}",
-                        request.getTicket().substring(0, Math.min(8, request.getTicket().length())) + "...");
-
-                return Result.success(responseDto);
-            }
-
-        } catch (Exception e) {
-            log.error("检查微信登录状态异常：{}",
-                    request != null ? request.getSummary() : "null", e);
-            return Result.fail(ResultCode.SYSTEM_ERROR, "检查微信登录状态失败：" + e.getMessage());
-        }
-    }
-
-    /**
-     * 处理微信登录回调
-     * 用于处理微信扫码后的回调通知
-     * @param request 微信登录回调请求
-     * @return 处理结果
-     */
-    @Override
-    @PostMapping("/weixin/callback")
-    public Result<String> weixinLoginCallback(@RequestBody WeixinLoginCallbackRequestDto request) {
-        try {
-            log.info("接收到微信登录回调请求：{}",
-                    request != null ? request.getSummary() : "null");
-
-            // 参数验证
-            if (request == null || !request.isValid()) {
-                return Result.fail(ResultCode.PARAM_ERROR, "回调请求参数不完整");
-            }
-
-            // 调用服务层处理回调
-            weixinLoginService.handleLoginCallback(
-                    request.getTicket(),
-                    request.getOpenId(),
-                    request.getUnionId(),
-                    request.getNickname(),
-                    request.getAvatar()
-            );
-
-            log.info("微信登录回调处理成功：ticket={}, openId={}",
-                    request.getTicket().substring(0, Math.min(8, request.getTicket().length())) + "...",
-                    request.getOpenId().substring(0, Math.min(8, request.getOpenId().length())) + "...");
-
-            return Result.success("微信登录回调处理成功");
-
-        } catch (Exception e) {
-            log.error("处理微信登录回调异常：{}",
-                    request != null ? request.getSummary() : "null", e);
-            return Result.fail(ResultCode.SYSTEM_ERROR, "处理微信登录回调失败：" + e.getMessage());
-        }
-    }
-
-    /**
-     * 生成微信登录token
-     * @param openId 用户OpenID
-     * @return token字符串
-     */
-    private String generateWeixinLoginToken(String openId) {
-        // 简单的token生成策略，实际项目中应该使用JWT等更安全的方式
-        return "wx_token_" + System.currentTimeMillis() + "_" + openId.hashCode();
-    }
-
+  
 }
