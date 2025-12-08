@@ -1,4 +1,4 @@
-package com.gaoyifeng.aioserver.infrastructure.util;
+package com.gaoyifeng.aioserver.infrastructure.gateway;
 
 import ai.z.openapi.ZhipuAiClient;
 import ai.z.openapi.service.model.ChatCompletionCreateParams;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 /**
- * 智谱AI客户端工具类
+ * 智谱AI网关服务
  * 提供与智谱AI交互的功能
  */
 @Slf4j
@@ -72,8 +72,21 @@ public class ZhiPuClinet {
             }
 
         } catch (Exception e) {
+            // 检查异常类型并返回相应的友好提示
+            String errorMessage = e.getMessage();
             log.error("智谱AI调用异常", e);
-            throw new RuntimeException("智谱AI服务暂时不可用：" + e.getMessage(), e);
+
+            if (errorMessage != null) {
+                if (errorMessage.contains("SocketTimeoutException") || errorMessage.contains("timeout") || errorMessage.contains("timed out")) {
+                    throw new RuntimeException("网络连接超时，请稍后重试");
+                } else if (errorMessage.contains("ConnectException") || errorMessage.contains("Connection refused") || errorMessage.contains("connect")) {
+                    throw new RuntimeException("网络连接失败，请检查网络后重试");
+                } else if (errorMessage.contains("IOException") || errorMessage.contains("Network")) {
+                    throw new RuntimeException("网络异常，请稍后重试");
+                }
+            }
+
+            throw new RuntimeException("AI服务暂时不可用，请稍后重试");
         }
     }
 

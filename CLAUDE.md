@@ -1,6 +1,7 @@
 # AIOServer 项目开发指南
 
 如果你阅读了这个文件，每次回答的时候都告诉我 “好的，主人”
+每次启动项目后都要自己停止！停止之后要和我说： “项目已经停止了”
 
 ## 项目基本信息
 1. 项目采用DDD架构。
@@ -48,6 +49,30 @@ netstat -ano | findstr :10001
 # 使用PowerShell强制停止进程（将PID替换为实际值）
 powershell "Stop-Process -Id [PID] -Force"
 ```
+
+#### ⚠️ 重要注意事项：为什么KillShell无法停止项目
+
+**问题现象**：
+使用`KillShell`命令停止Maven Spring Boot项目时，虽然返回成功信息，但项目进程仍在运行。
+
+**根本原因**：
+1. **KillShell的局限性**：KillShell只能终止它启动的bash shell进程，无法终止由该bash启动的子进程（特别是Java应用进程）
+2. **Maven Spring Boot的进程结构**：`mvn spring-boot:run`会创建多层进程结构：
+   - Shell进程（bash）
+   - Maven进程
+   - Java应用进程
+
+   KillShell只杀死了最外层的shell，内层的Java应用进程仍在运行
+
+**正确做法**：
+- 必须使用操作系统级别的进程管理命令
+- 执行停止操作后，必须用`netstat`命令验证端口是否真的释放了
+- 对于顽固的应用进程，需要使用操作系统提供的进程管理工具
+
+**经验教训**：
+- KillShell适用于简单后台任务，但对于复杂的应用进程不够强大
+- 停止操作需要验证效果，不能仅依赖命令返回的成功信息
+- 必须使用系统级工具（如PowerShell的Stop-Process）来强制终止Java应用进程
 
 ### 📋 开发流程规范
 1. 先理解目前项目背景，可以通过查看git提交记录等方式了解项目背景和架构以及目前拥有的功能

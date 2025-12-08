@@ -2,7 +2,7 @@ package com.gaoyifeng.aioserver.domain.chat.service;
 
 import com.gaoyifeng.aioserver.api.dto.chat.request.ChatRequest;
 import com.gaoyifeng.aioserver.api.dto.chat.response.ChatResponse;
-import com.gaoyifeng.aioserver.infrastructure.util.ZhiPuClinet;
+import com.gaoyifeng.aioserver.infrastructure.gateway.ZhiPuClinet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,9 +42,14 @@ public class ChatService {
         } catch (IllegalArgumentException e) {
             log.warn("AI聊天请求参数错误：{}", e.getMessage());
             throw e;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            // 捕获来自ZhiPuClinet的业务异常，直接传递
             log.error("AI聊天处理异常，请求：{}", request.getSummary(), e);
-            throw new RuntimeException("AI聊天处理失败：" + e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            // 捕获其他未知异常，返回友好提示
+            log.error("AI聊天处理未知异常，请求：{}", request.getSummary(), e);
+            throw new RuntimeException("AI聊天服务暂时不可用，请稍后重试");
         }
     }
 

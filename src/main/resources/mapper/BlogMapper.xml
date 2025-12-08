@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.BlogMapper">
+
+    <resultMap id="BlogResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.BlogPO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="cate_id" property="cateId"/>
+        <result column="cate_name" property="cateName"/>
+        <result column="cover_img" property="coverImg"/>
+        <result column="content" property="content"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 根据ID更新博客 -->
+    <update id="updateById" parameterType="com.gaoyifeng.aioserver.infrastructure.dao.po.BlogPO">
+        UPDATE blog
+        SET title = #{title},
+            cate_id = #{cateId},
+            cate_name = #{cateName},
+            cover_img = #{coverImg},
+            content = #{content},
+            state = #{state},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查找博客 -->
+    <select id="selectById" parameterType="string" resultMap="BlogResultMap">
+        SELECT id, title, cate_id, cate_name, cover_img, content, state, create_time, update_time
+        FROM blog
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入新博客 -->
+    <insert id="insert" parameterType="com.gaoyifeng.aioserver.infrastructure.dao.po.BlogPO">
+        INSERT INTO blog (id, title, cate_id, cate_name, cover_img, content, state, create_time, update_time)
+        VALUES (#{id}, #{title}, #{cateId}, #{cateName}, #{coverImg}, #{content}, #{state}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 查找所有博客 -->
+    <select id="findAll" resultMap="BlogResultMap">
+        SELECT id, title, cate_id, cate_name, cover_img, content, state, create_time, update_time
+        FROM blog
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页条件查询博客 - 优化后的动态SQL -->
+    <select id="selectByPage" resultMap="BlogResultMap">
+        SELECT id, title, cate_id, cate_name, cover_img, content, state, create_time, update_time
+        FROM blog
+        <where>
+            <if test="cateId != null and cateId != ''">
+                AND cate_id = #{cateId}
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 根据条件统计博客数量 -->
+    <select id="countByCondition" resultType="long">
+        SELECT COUNT(*) FROM blog
+        <where>
+            <if test="cateId != null and cateId != ''">
+                AND cate_id = #{cateId}
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据分类ID查找博客 -->
+    <select id="selectByCateId" parameterType="string" resultMap="BlogResultMap">
+        SELECT id, title, cate_id, cate_name, cover_img, content, state, create_time, update_time
+        FROM blog
+        WHERE cate_id = #{cateId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据ID删除博客 -->
+    <delete id="deleteById" parameterType="string">
+        DELETE FROM blog WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除博客 - 优化foreach标签使用 -->
+    <delete id="deleteByIds">
+        DELETE FROM blog
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

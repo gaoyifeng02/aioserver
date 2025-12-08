@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.dao.mapper;
 
 import com.gaoyifeng.aioserver.infrastructure.dao.po.UserPO;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户数据访问映射器
@@ -14,7 +14,6 @@ public interface UserMapper {
      * @param username 用户名
      * @return 用户PO
      */
-    @Select("SELECT id, username, password, create_time, update_time FROM user WHERE username = #{username} LIMIT 1")
     UserPO findByUsername(String username);
 
     /**
@@ -22,7 +21,6 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 用户PO
      */
-    @Select("SELECT id, username, password, create_time, update_time FROM user WHERE id = #{id} LIMIT 1")
     UserPO findById(String id);
 
     /**
@@ -30,23 +28,20 @@ public interface UserMapper {
      * @param userPO 用户PO
      * @return 影响行数
      */
-    @Insert("INSERT INTO user (id, username, password, create_time, update_time) VALUES (#{userPO.id}, #{userPO.username}, #{userPO.password}, #{userPO.createTime}, #{userPO.updateTime})")
-    int insert(@Param("userPO") UserPO userPO);
+    int insert(UserPO userPO);
 
     /**
      * 更新用户信息
      * @param userPO 用户PO
      * @return 影响行数
      */
-    @Update("UPDATE user SET username = #{userPO.username}, password = #{userPO.password}, update_time = #{userPO.updateTime} WHERE id = #{userPO.id}")
-    int update(@Param("userPO") UserPO userPO);
+    int update(UserPO userPO);
 
     /**
      * 根据用户名统计数量
      * @param username 用户名
      * @return 数量
      */
-    @Select("SELECT COUNT(1) FROM user WHERE username = #{username}")
     int countByUsername(String username);
 
     /**
@@ -54,6 +49,5 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 数量
      */
-    @Select("SELECT COUNT(1) FROM user WHERE id = #{id}")
     int countById(String id);
 }

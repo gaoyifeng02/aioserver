@@ -31,6 +31,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             "/api/v1/auth/weixin/qrcode",
             "/api/v1/auth/weixin/check",
             "/api/v1/auth/weixin/callback",
+            "/auth/login",
+            "/auth/register",
     };
 
     @Override
