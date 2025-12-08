@@ -5,6 +5,8 @@ import ai.z.openapi.service.model.ChatCompletionCreateParams;
 import ai.z.openapi.service.model.ChatCompletionResponse;
 import ai.z.openapi.service.model.ChatMessage;
 import ai.z.openapi.service.model.ChatMessageRole;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaoyifeng.aioserver.app.config.ZhiPuConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class ZhiPuClinet {
 
     @Autowired
     private ZhiPuConfig zhiPuConfig;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * AI聊天对话
@@ -56,7 +60,10 @@ public class ZhiPuClinet {
             // 处理响应
             if (response.isSuccess()) {
                 Object messageObj = response.getData().getChoices().get(0).getMessage();
-                String reply = messageObj.toString();
+
+                // 使用JSON对象解析提取content内容
+                String reply = extractContentFromChatMessage(messageObj);
+
                 log.info("智谱AI回复成功，回复长度：{}", reply.length());
                 return reply;
             } else {
@@ -67,6 +74,40 @@ public class ZhiPuClinet {
         } catch (Exception e) {
             log.error("智谱AI调用异常", e);
             throw new RuntimeException("智谱AI服务暂时不可用：" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 从ChatMessage对象中提取content内容
+     * 使用JSON对象解析，遵循DDD原则
+     * @param messageObj ChatMessage对象
+     * @return content内容
+     */
+    private String extractContentFromChatMessage(Object messageObj) {
+        if (messageObj == null) {
+            return "AI回复为空";
+        }
+
+        try {
+            // 将ChatMessage对象序列化为JSON字符串
+            String messageJson = objectMapper.writeValueAsString(messageObj);
+            log.debug("ChatMessage JSON: {}", messageJson);
+
+            // 解析JSON并提取content字段
+            JsonNode jsonNode = objectMapper.readTree(messageJson);
+            JsonNode contentNode = jsonNode.get("content");
+
+            if (contentNode != null && !contentNode.isNull()) {
+                return contentNode.asText();
+            } else {
+                log.warn("ChatMessage对象中未找到content字段: {}", messageJson);
+                return messageObj.toString();
+            }
+
+        } catch (Exception e) {
+            log.error("解析ChatMessage对象失败，使用原始toString: {}", messageObj, e);
+            // 降级处理：返回原始对象的字符串表示
+            return messageObj.toString();
         }
     }
 
