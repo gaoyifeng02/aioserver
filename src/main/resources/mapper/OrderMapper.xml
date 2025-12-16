@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.OrderMapper">
+
+    <resultMap id="OrderPODataMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.OrderPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="order_id" property="orderId"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="quantity" property="quantity"/>
+        <result column="status" property="status"/>
+        <result column="pay_url" property="payUrl"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.gaoyifeng.aioserver.infrastructure.dao.po.OrderPO">
+        INSERT INTO order_table (user_id, product_id, product_name, order_id, order_time, total_amount, quantity, status, pay_url, create_time, update_time)
+        VALUES (#{userId}, #{productId}, #{productName}, #{orderId}, #{orderTime}, #{totalAmount}, #{quantity}, #{status}, #{payUrl}, NOW(), NOW())
+    </insert>
+
+    <select id="queryUnPayOrder" resultMap="OrderPODataMap">
+        SELECT product_id, product_name, order_id, order_time, total_amount, quantity, status, pay_url, pay_time
+        FROM order_table
+        WHERE user_id = #{userId} AND product_id = #{productId} AND status IN ('CREATE', 'PAY_WAIT')
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="queryOrderById" resultMap="OrderPODataMap">
+        SELECT id, user_id, product_id, product_name, order_id, order_time, total_amount, quantity, status, pay_url, pay_time, create_time, update_time
+        FROM order_table
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="queryUserOrders" resultMap="OrderPODataMap">
+        SELECT id, user_id, product_id, product_name, order_id, order_time, total_amount, quantity, status, pay_url, pay_time, create_time, update_time
+        FROM order_table
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="updateOrderStatus">
+        UPDATE order_table
+        SET status = #{status}, update_time = NOW()
+        WHERE order_id = #{orderId}
+    </update>
+
+</mapper>

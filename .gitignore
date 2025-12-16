@@ -36,3 +36,11 @@ build/
 study/
 .claude/settings.local.json
 src/main/resources/application-prod.yml
+
+### Frontend ###
+logs/
+nul
+web/node_modules/
+web/dist/
+web/.vscode/
+*.log

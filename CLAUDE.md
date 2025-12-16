@@ -1,7 +1,8 @@
 # AIOServer 项目开发指南
 
 如果你阅读了这个文件，每次回答的时候都告诉我 “好的，主人”
-每次启动项目后都要自己停止！停止之后要和我说： “项目已经停止了”
+每次启动项目后都要自己停止！停止之后要和我说： “项目已经停止了” 
+测试接口需要携带 Authorization 1
 
 ## 项目基本信息
 1. 项目采用DDD架构。
@@ -137,3 +138,42 @@ DELETE - 删除资源（幂等）
 • 不支持时可用 DELETE Over POST：POST /resource?_method=DELETE
 
 • 示例：DELETE /class/students/2
+
+## DDD分包规范
+
+
+分包：
+- app 项目启动模块
+    - config 配置中心 不懂
+    - 应用初始化
+- trigger 触发层 dto 处理外部输入，转换为do给应用层
+    - http Http请求
+        - dto 放http接口的请求
+    - mq 消息队列消费者
+    - rpc grpc服务实现
+- api 应用层 用来编排调用 do代表领域对象（就是model下的全部）
+    - 定义服务接口，编排业务流程
+    - 协调领域服务和基础设施
+    - 处理事务便捷
+- domain 领域模块 领域对象
+    - model
+        - aggreate 聚合对象 协同
+        - entity 实体对象，与数据库持久层对象1-1.
+        - valobj 值对象，通过对象属性来识别对象 不懂
+    - adapter
+        - respository 仓储接口
+        - port 接口
+        - event 事件，消息推送
+    - service 服务
+- infrastructure 基础层 po
+    - cache redis
+    - dao
+    - adapter
+        - repository
+        - port
+    - gateway
+        - api
+        - dto 调用外部api的时候使用的dto
+    - event
+- types 枚举 工具类
+    - proto

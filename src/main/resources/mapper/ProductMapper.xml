@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.ProductMapper">
+
+    <resultMap id="ProductPODataMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.ProductPO">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="description" property="description"/>
+        <result column="price" property="price"/>
+        <result column="stock" property="stock"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="queryProductByProductId" resultMap="ProductPODataMap">
+        SELECT id, product_id, product_name, description, price, stock, category_id, status, create_time, update_time
+        FROM product_table
+        WHERE product_id = #{productId} AND status = 'ACTIVE'
+    </select>
+
+    <update id="updateStock">
+        UPDATE product_table
+        SET stock = stock - #{quantity}, update_time = NOW()
+        WHERE product_id = #{productId} AND stock >= #{quantity}
+    </update>
+
+</mapper>
