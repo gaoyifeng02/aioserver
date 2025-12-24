@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.AssetAccountDao">
+
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.AssetAccountPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="total_balance" property="totalBalance"/>
+        <result column="total_savings" property="totalSavings"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, total_balance, total_savings, is_deleted, create_time, update_time
+        FROM asset_account
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+    </select>
+
+</mapper>
