@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.TransactionFlowDao">
+
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.TransactionFlowPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="flow_type" property="flowType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="transaction_type" property="transactionType"/>
+        <result column="transaction_name" property="transactionName"/>
+        <result column="amount" property="amount"/>
+        <result column="balance_before" property="balanceBefore"/>
+        <result column="balance_after" property="balanceAfter"/>
+        <result column="transaction_datetime" property="transactionDatetime"/>
+        <result column="description" property="description"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="queryById" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, flow_type, source_id, transaction_type, transaction_name,
+            amount, balance_before, balance_after, transaction_datetime,
+            description, is_deleted, create_time
+        FROM asset_transaction_flow
+        WHERE id = #{id}
+          AND is_deleted = 0
+    </select>
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, flow_type, source_id, transaction_type, transaction_name,
+            amount, balance_before, balance_after, transaction_datetime,
+            description, is_deleted, create_time
+        FROM asset_transaction_flow
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+        ORDER BY transaction_datetime DESC
+    </select>
+
+</mapper>
