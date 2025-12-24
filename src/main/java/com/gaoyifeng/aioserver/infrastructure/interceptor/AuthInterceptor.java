@@ -1,6 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
 import lombok.extern.slf4j.Slf4j;
@@ -81,8 +82,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 将用户ID存入request属性，供后续使用
-        request.setAttribute("userId", userId);
+        // 将用户ID存入ThreadLocal,供后续使用
+        LoginUserContext.setUserId(userId);
         log.debug("Token验证成功，用户ID：{} {}", userId, requestURI);
 
         return true;
@@ -100,5 +101,11 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
         }
         return false;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        // 请求结束后清理ThreadLocal,防止内存泄漏
+        LoginUserContext.clearUserId();
     }
 }
