@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.RecurringTransactionDao">
+
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.RecurringTransactionPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="transaction_type" property="transactionType"/>
+        <result column="transaction_name" property="transactionName"/>
+        <result column="amount" property="amount"/>
+        <result column="trigger_type" property="triggerType"/>
+        <result column="trigger_value" property="triggerValue"/>
+        <result column="status" property="status"/>
+        <result column="end_date" property="endDate"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO asset_recurring_transaction (
+            id, user_id, transaction_type, transaction_name, amount,
+            trigger_type, trigger_value, status, end_date
+        ) VALUES (
+            #{po.id}, #{po.userId}, #{po.transactionType}, #{po.transactionName}, #{po.amount},
+            #{po.triggerType}, #{po.triggerValue}, #{po.status}, #{po.endDate}
+        )
+    </insert>
+
+    <update id="softDelete">
+        UPDATE asset_recurring_transaction
+        SET is_deleted = 1
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND is_deleted = 0
+    </update>
+
+    <update id="update">
+        UPDATE asset_recurring_transaction
+        SET transaction_name = #{po.transactionName},
+            amount = #{po.amount},
+            trigger_type = #{po.triggerType},
+            trigger_value = #{po.triggerValue},
+            status = #{po.status},
+            end_date = #{po.endDate}
+        WHERE id = #{po.id}
+          AND user_id = #{po.userId}
+          AND is_deleted = 0
+    </update>
+
+    <select id="queryById" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, transaction_type, transaction_name, amount,
+            trigger_type, trigger_value, status, end_date,
+            is_deleted, create_time, update_time
+        FROM asset_recurring_transaction
+        WHERE id = #{id}
+          AND is_deleted = 0
+    </select>
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, transaction_type, transaction_name, amount,
+            trigger_type, trigger_value, status, end_date,
+            is_deleted, create_time, update_time
+        FROM asset_recurring_transaction
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
