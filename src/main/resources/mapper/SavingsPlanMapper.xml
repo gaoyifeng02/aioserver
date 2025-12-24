@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.SavingsPlanDao">
+
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.SavingsPlanPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="plan_name" property="planName"/>
+        <result column="start_date" property="startDate"/>
+        <result column="monthly_deposit_amount" property="monthlyDepositAmount"/>
+        <result column="interest_calculation_type" property="interestCalculationType"/>
+        <result column="interest_rate" property="interestRate"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO asset_savings_plan (
+            id, user_id, plan_name, start_date, monthly_deposit_amount,
+            interest_calculation_type, interest_rate, status, description
+        ) VALUES (
+            #{po.id}, #{po.userId}, #{po.planName}, #{po.startDate}, #{po.monthlyDepositAmount},
+            #{po.interestCalculationType}, #{po.interestRate}, #{po.status}, #{po.description}
+        )
+    </insert>
+
+    <update id="softDelete">
+        UPDATE asset_savings_plan
+        SET is_deleted = 1
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND is_deleted = 0
+    </update>
+
+    <update id="update">
+        UPDATE asset_savings_plan
+        SET plan_name = #{po.planName},
+            monthly_deposit_amount = #{po.monthlyDepositAmount},
+            interest_calculation_type = #{po.interestCalculationType},
+            interest_rate = #{po.interestRate},
+            status = #{po.status},
+            description = #{po.description}
+        WHERE id = #{po.id}
+          AND user_id = #{po.userId}
+          AND is_deleted = 0
+    </update>
+
+    <select id="queryById" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, plan_name, start_date, monthly_deposit_amount,
+            interest_calculation_type, interest_rate, status, description,
+            is_deleted, create_time, update_time
+        FROM asset_savings_plan
+        WHERE id = #{id}
+          AND is_deleted = 0
+    </select>
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, plan_name, start_date, monthly_deposit_amount,
+            interest_calculation_type, interest_rate, status, description,
+            is_deleted, create_time, update_time
+        FROM asset_savings_plan
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
