@@ -1,10 +1,10 @@
 package com.gaoyifeng.aioserver.trigger.http;
 
+import com.gaoyifeng.aioserver.api.dto.asset.response.AssetAccountResponseDto;
 import com.gaoyifeng.aioserver.api.service.IAssetAccountService;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
-import com.gaoyifeng.aioserver.types.vo.AssetAccountVO;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -24,10 +24,10 @@ public class AssetAccountController {
      * @return 资产总览信息
      */
     @GetMapping
-    public Result<AssetAccountVO> queryAssetAccount() {
+    public Result<AssetAccountResponseDto> queryAssetAccount() {
         // 从ThreadLocal获取用户ID
         String userId = LoginUserContext.getUserId();
-        AssetAccountVO vo = assetAccountService.queryAssetAccount(userId);
+        AssetAccountResponseDto vo = assetAccountService.queryAssetAccount(userId);
 
         if (vo == null) {
             return Result.fail(ResultCode._404.getCode(), "资产账户不存在");

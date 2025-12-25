@@ -1,9 +1,9 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.PendingTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.PendingTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.PendingTransactionResponseDto;
 import com.gaoyifeng.aioserver.domain.model.entity.PendingTransactionEntity;
-import com.gaoyifeng.aioserver.types.dto.PendingTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.PendingTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.PendingTransactionVO;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface IPendingTransactionService {
     /**
      * 添加待入账
      */
-    void add(String userId, PendingTransactionAddDTO dto);
+    void add(String userId, PendingTransactionAddRequestDto dto);
 
     /**
      * 删除待入账
@@ -25,15 +25,15 @@ public interface IPendingTransactionService {
     /**
      * 更新待入账
      */
-    void update(String id, String userId, PendingTransactionUpdateDTO dto);
+    void update(String id, String userId, PendingTransactionUpdateRequestDto dto);
 
     /**
      * 根据ID查询待入账
      */
-    PendingTransactionVO queryById(String id);
+    PendingTransactionResponseDto queryById(String id);
 
     /**
      * 查询用户所有待入账
      */
-    List<PendingTransactionVO> queryByUserId(String userId);
+    List<PendingTransactionResponseDto> queryByUserId(String userId);
 }

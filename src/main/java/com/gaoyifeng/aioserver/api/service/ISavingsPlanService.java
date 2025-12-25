@@ -1,8 +1,8 @@
 package com.gaoyifeng.aioserver.api.service;
 
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanAddDTO;
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.SavingsPlanVO;
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.SavingsPlanResponseDto;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface ISavingsPlanService {
      * @param dto 新增请求DTO
      * @return 计划ID
      */
-    String add(SavingsPlanAddDTO dto);
+    String add(SavingsPlanAddRequestDto dto);
 
     /**
      * 删除存款计划
@@ -29,18 +29,18 @@ public interface ISavingsPlanService {
      * @param id 计划ID
      * @param dto 更新请求DTO
      */
-    void update(String id, SavingsPlanUpdateDTO dto);
+    void update(String id, SavingsPlanUpdateRequestDto dto);
 
     /**
      * 查询单个存款计划
      * @param id 计划ID
      * @return 存款计划VO
      */
-    SavingsPlanVO getById(String id);
+    SavingsPlanResponseDto getById(String id);
 
     /**
      * 查询用户的所有存款计划
      * @return 存款计划VO列表
      */
-    List<SavingsPlanVO> list();
+    List<SavingsPlanResponseDto> list();
 }

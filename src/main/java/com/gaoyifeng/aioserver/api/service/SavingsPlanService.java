@@ -1,13 +1,13 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.SavingsPlanResponseDto;
 import com.gaoyifeng.aioserver.api.service.ISavingsPlanService;
 import com.gaoyifeng.aioserver.domain.adapter.repository.ISavingsPlanRepository;
 import com.gaoyifeng.aioserver.domain.model.entity.SavingsPlanEntity;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.infrastructure.util.SnowflakeIdWorker;
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanAddDTO;
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.SavingsPlanVO;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -25,7 +25,7 @@ public class SavingsPlanService implements ISavingsPlanService {
     private ISavingsPlanRepository savingsPlanRepository;
 
     @Override
-    public String add(SavingsPlanAddDTO dto) {
+    public String add(SavingsPlanAddRequestDto dto) {
         String userId = LoginUserContext.getUserId();
 
         SavingsPlanEntity entity = new SavingsPlanEntity();
@@ -51,7 +51,7 @@ public class SavingsPlanService implements ISavingsPlanService {
     }
 
     @Override
-    public void update(String id, SavingsPlanUpdateDTO dto) {
+    public void update(String id, SavingsPlanUpdateRequestDto dto) {
         String userId = LoginUserContext.getUserId();
 
         SavingsPlanEntity existingEntity = savingsPlanRepository.queryById(id);
@@ -86,7 +86,7 @@ public class SavingsPlanService implements ISavingsPlanService {
     }
 
     @Override
-    public SavingsPlanVO getById(String id) {
+    public SavingsPlanResponseDto getById(String id) {
         String userId = LoginUserContext.getUserId();
         SavingsPlanEntity entity = savingsPlanRepository.queryById(id);
 
@@ -102,11 +102,11 @@ public class SavingsPlanService implements ISavingsPlanService {
     }
 
     @Override
-    public List<SavingsPlanVO> list() {
+    public List<SavingsPlanResponseDto> list() {
         String userId = LoginUserContext.getUserId();
         List<SavingsPlanEntity> entityList = savingsPlanRepository.queryByUserId(userId);
 
-        List<SavingsPlanVO> voList = new ArrayList<>();
+        List<SavingsPlanResponseDto> voList = new ArrayList<>();
         for (SavingsPlanEntity entity : entityList) {
             voList.add(convertToVO(entity));
         }
@@ -114,8 +114,8 @@ public class SavingsPlanService implements ISavingsPlanService {
         return voList;
     }
 
-    private SavingsPlanVO convertToVO(SavingsPlanEntity entity) {
-        SavingsPlanVO vo = new SavingsPlanVO();
+    private SavingsPlanResponseDto convertToVO(SavingsPlanEntity entity) {
+        SavingsPlanResponseDto vo = new SavingsPlanResponseDto();
         vo.setId(entity.getId());
         vo.setUserId(entity.getUserId());
         vo.setPlanName(entity.getPlanName());

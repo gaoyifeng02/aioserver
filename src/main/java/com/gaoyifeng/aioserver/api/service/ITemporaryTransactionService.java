@@ -1,9 +1,9 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.TemporaryTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.TemporaryTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.TemporaryTransactionResponseDto;
 import com.gaoyifeng.aioserver.domain.model.entity.TemporaryTransactionEntity;
-import com.gaoyifeng.aioserver.types.dto.TemporaryTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.TemporaryTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.TemporaryTransactionVO;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface ITemporaryTransactionService {
     /**
      * 添加临时收支记录
      */
-    void add(String userId, TemporaryTransactionAddDTO dto);
+    void add(String userId, TemporaryTransactionAddRequestDto dto);
 
     /**
      * 删除临时收支记录
@@ -25,15 +25,15 @@ public interface ITemporaryTransactionService {
     /**
      * 更新临时收支记录
      */
-    void update(String id, String userId, TemporaryTransactionUpdateDTO dto);
+    void update(String id, String userId, TemporaryTransactionUpdateRequestDto dto);
 
     /**
      * 根据ID查询临时收支记录
      */
-    TemporaryTransactionVO queryById(String id);
+    TemporaryTransactionResponseDto queryById(String id);
 
     /**
      * 查询用户所有临时收支记录
      */
-    List<TemporaryTransactionVO> queryByUserId(String userId);
+    List<TemporaryTransactionResponseDto> queryByUserId(String userId);
 }

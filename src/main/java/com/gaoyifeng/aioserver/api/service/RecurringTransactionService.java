@@ -1,13 +1,13 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.RecurringTransactionResponseDto;
 import com.gaoyifeng.aioserver.api.service.IRecurringTransactionService;
 import com.gaoyifeng.aioserver.domain.adapter.repository.IRecurringTransactionRepository;
 import com.gaoyifeng.aioserver.domain.model.entity.RecurringTransactionEntity;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.infrastructure.util.SnowflakeIdWorker;
-import com.gaoyifeng.aioserver.types.dto.RecurringTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.RecurringTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.RecurringTransactionVO;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -24,7 +24,7 @@ public class RecurringTransactionService implements IRecurringTransactionService
     private IRecurringTransactionRepository recurringTransactionRepository;
 
     @Override
-    public String add(RecurringTransactionAddDTO dto) {
+    public String add(RecurringTransactionAddRequestDto dto) {
         // 获取当前登录用户ID
         String userId = LoginUserContext.getUserId();
 
@@ -54,7 +54,7 @@ public class RecurringTransactionService implements IRecurringTransactionService
     }
 
     @Override
-    public void update(String id, RecurringTransactionUpdateDTO dto) {
+    public void update(String id, RecurringTransactionUpdateRequestDto dto) {
         String userId = LoginUserContext.getUserId();
 
         // 查询原数据
@@ -93,7 +93,7 @@ public class RecurringTransactionService implements IRecurringTransactionService
     }
 
     @Override
-    public RecurringTransactionVO getById(String id) {
+    public RecurringTransactionResponseDto getById(String id) {
         String userId = LoginUserContext.getUserId();
         RecurringTransactionEntity entity = recurringTransactionRepository.queryById(id);
 
@@ -111,11 +111,11 @@ public class RecurringTransactionService implements IRecurringTransactionService
     }
 
     @Override
-    public List<RecurringTransactionVO> list() {
+    public List<RecurringTransactionResponseDto> list() {
         String userId = LoginUserContext.getUserId();
         List<RecurringTransactionEntity> entityList = recurringTransactionRepository.queryByUserId(userId);
 
-        List<RecurringTransactionVO> voList = new ArrayList<>();
+        List<RecurringTransactionResponseDto> voList = new ArrayList<>();
         for (RecurringTransactionEntity entity : entityList) {
             voList.add(convertToVO(entity));
         }
@@ -126,8 +126,8 @@ public class RecurringTransactionService implements IRecurringTransactionService
     /**
      * 转换Entity为VO
      */
-    private RecurringTransactionVO convertToVO(RecurringTransactionEntity entity) {
-        RecurringTransactionVO vo = new RecurringTransactionVO();
+    private RecurringTransactionResponseDto convertToVO(RecurringTransactionEntity entity) {
+        RecurringTransactionResponseDto vo = new RecurringTransactionResponseDto();
         vo.setId(entity.getId());
         vo.setUserId(entity.getUserId());
         vo.setTransactionType(entity.getTransactionType());

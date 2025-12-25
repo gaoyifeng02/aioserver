@@ -97,30 +97,26 @@ CREATE TABLE IF NOT EXISTS `asset_savings_plan` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存款计划表';
 
--- ========================================
--- 测试数据示例
--- ========================================
-
 -- 初始化用户资产账户
 INSERT INTO `asset_account` (`id`, `user_id`, `total_balance`, `total_savings`) VALUES
-('ACC001', 'U001', 50000.00, 20000.00);
+('gaoyifeng', 'gaoyifeng', 0.00, 0.00);
+-- 初始化固定表
+INSERT INTO `asset_recurring_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `amount`, `trigger_type`, `trigger_value`, `status`)
+VALUES
+    ('1', 'gaoyifeng', 'INCOME', '工资进账', 13000.00, 'MONTHLY', '1', 'ACTIVE'),
+    ('2', 'gaoyifeng', 'INCOME', '公积金收入', 1600.00, 'MONTHLY', '26', 'ACTIVE'),
+    ('3', 'gaoyifeng', 'EXPENSE', '房租', 3200.00, 'MONTHLY', '1', 'ACTIVE'),
+    ('4', 'gaoyifeng', 'EXPENSE', '房贷', 1500.00, 'MONTHLY', '1', 'ACTIVE');
 
--- 固定收支配置示例
-INSERT INTO `asset_recurring_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `amount`, `trigger_type`, `trigger_value`, `status`, `end_date`) VALUES
-('RT001', 'U001', 'INCOME', '月薪', 10000.00, 'MONTHLY', '15', 'ACTIVE', '2025-12-31'),
-('RT002', 'U001', 'EXPENSE', '房租', 3000.00, 'MONTHLY', '1', 'ACTIVE', NULL),
-('RT003', 'U001', 'INCOME', '每周存钱', 500.00, 'WEEKLY', '5', 'ACTIVE', NULL);
+INSERT INTO `asset_recurring_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `amount`, `trigger_type`, `trigger_value`, `status`, `end_date`)
+VALUES
+    ('5', 'gaoyifeng', 'EXPENSE', '抖音借款-第1期', 206.00, 'MONTHLY', '2', 'ACTIVE', '2026-04-30'),
+    ('6', 'gaoyifeng', 'EXPENSE', '抖音借款-第2期', 172.00, 'MONTHLY', '2', 'ACTIVE', '2026-03-30'),
+    ('7', 'gaoyifeng', 'EXPENSE', '抖音借款-第3期', 640.00, 'MONTHLY', '2', 'ACTIVE', '2026-10-02'),
+    ('8', 'gaoyifeng', 'EXPENSE', '小花借款', 1134.00, 'MONTHLY', '2', 'ACTIVE', '2026-08-02'),
+    ('9', 'gaoyifeng', 'EXPENSE', '支付宝借款', 692.00, 'MONTHLY', '8', 'ACTIVE', '2026-11-30'),
+    ('10', 'gaoyifeng', 'EXPENSE', '京东借款', 293.00, 'MONTHLY', '3', 'ACTIVE', '2026-09-30'),
+    ('11', 'gaoyifeng', 'EXPENSE', '好分期借款', 300.00, 'MONTHLY', '23', 'ACTIVE', '2026-07-30'),
+    ('12', 'gaoyifeng', 'EXPENSE', '微信借款', 450.00, 'MONTHLY', '20', 'ACTIVE', '2026-10-30');
 
--- 临时收支记录示例
-INSERT INTO `asset_temporary_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `transaction_datetime`, `description`) VALUES
-('TT001', 'U001', 'INCOME', '年终奖', '2025-01-15 10:30:00', '2024年年终奖'),
-('TT002', 'U001', 'EXPENSE', '买iPhone', '2025-01-20 14:20:00', '购买iPhone 15 Pro');
 
--- 待入账表示例
-INSERT INTO `asset_pending_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `total_amount`, `remaining_amount`, `status`, `description`) VALUES
-('PT001', 'U001', 'INCOME', '向张三借款', 10000.00, 10000.00, 'PENDING', '临时借款用于周转');
-
--- 存款计划示例
-INSERT INTO `asset_savings_plan` (`id`, `user_id`, `plan_name`, `start_date`, `monthly_deposit_amount`, `interest_calculation_type`, `interest_rate`, `status`, `description`) VALUES
-('SP001', 'U001', '买房基金', '2025-01-01', 1000.00, 'YEARLY', 0.030000, 'ACTIVE', '为买房准备的基金'),
-('SP002', 'U001', '应急储备金', '2025-01-01', 500.00, 'DAILY', 0.015000, 'ACTIVE', '应急资金储备');

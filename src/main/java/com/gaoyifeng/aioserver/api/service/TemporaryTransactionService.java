@@ -1,12 +1,12 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.TemporaryTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.TemporaryTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.TemporaryTransactionResponseDto;
 import com.gaoyifeng.aioserver.domain.adapter.repository.ITemporaryTransactionRepository;
 import com.gaoyifeng.aioserver.domain.model.entity.TemporaryTransactionEntity;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.infrastructure.util.SnowflakeIdWorker;
-import com.gaoyifeng.aioserver.types.dto.TemporaryTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.TemporaryTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.TemporaryTransactionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class TemporaryTransactionService implements ITemporaryTransactionService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void add(String userId, TemporaryTransactionAddDTO dto) {
+    public void add(String userId, TemporaryTransactionAddRequestDto dto) {
         TemporaryTransactionEntity entity = new TemporaryTransactionEntity();
         SnowflakeIdWorker idWorker = new SnowflakeIdWorker(1, 1);
         entity.setId(idWorker.nextIdStr());
@@ -51,7 +51,7 @@ public class TemporaryTransactionService implements ITemporaryTransactionService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(String id, String userId, TemporaryTransactionUpdateDTO dto) {
+    public void update(String id, String userId, TemporaryTransactionUpdateRequestDto dto) {
         TemporaryTransactionEntity entity = temporaryTransactionRepository.queryById(id);
         if (entity == null) {
             throw new RuntimeException("临时收支记录不存在");
@@ -67,13 +67,13 @@ public class TemporaryTransactionService implements ITemporaryTransactionService
     }
 
     @Override
-    public TemporaryTransactionVO queryById(String id) {
+    public TemporaryTransactionResponseDto queryById(String id) {
         TemporaryTransactionEntity entity = temporaryTransactionRepository.queryById(id);
         if (entity == null) {
             throw new RuntimeException("临时收支记录不存在");
         }
 
-        TemporaryTransactionVO vo = new TemporaryTransactionVO();
+        TemporaryTransactionResponseDto vo = new TemporaryTransactionResponseDto();
         vo.setId(entity.getId());
         vo.setUserId(entity.getUserId());
         vo.setTransactionType(entity.getTransactionType());
@@ -87,12 +87,12 @@ public class TemporaryTransactionService implements ITemporaryTransactionService
     }
 
     @Override
-    public List<TemporaryTransactionVO> queryByUserId(String userId) {
+    public List<TemporaryTransactionResponseDto> queryByUserId(String userId) {
         List<TemporaryTransactionEntity> entityList = temporaryTransactionRepository.queryByUserId(userId);
-        List<TemporaryTransactionVO> voList = new ArrayList<>();
+        List<TemporaryTransactionResponseDto> voList = new ArrayList<>();
 
         for (TemporaryTransactionEntity entity : entityList) {
-            TemporaryTransactionVO vo = new TemporaryTransactionVO();
+            TemporaryTransactionResponseDto vo = new TemporaryTransactionResponseDto();
             vo.setId(entity.getId());
             vo.setUserId(entity.getUserId());
             vo.setTransactionType(entity.getTransactionType());

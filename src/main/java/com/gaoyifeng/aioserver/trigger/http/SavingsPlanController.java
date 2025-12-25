@@ -1,11 +1,11 @@
 package com.gaoyifeng.aioserver.trigger.http;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.SavingsPlanUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.SavingsPlanResponseDto;
 import com.gaoyifeng.aioserver.api.service.ISavingsPlanService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanAddDTO;
-import com.gaoyifeng.aioserver.types.dto.SavingsPlanUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.SavingsPlanVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ public class SavingsPlanController {
      * 新增存款计划
      */
     @PostMapping
-    public Result<String> add(@RequestBody SavingsPlanAddDTO dto) {
+    public Result<String> add(@RequestBody SavingsPlanAddRequestDto dto) {
         try {
             String id = savingsPlanService.add(dto);
             return Result.success(id);
@@ -55,7 +55,7 @@ public class SavingsPlanController {
      * 更新存款计划
      */
     @PutMapping("/{id}")
-    public Result<Void> update(@PathVariable("id") String id, @RequestBody SavingsPlanUpdateDTO dto) {
+    public Result<Void> update(@PathVariable("id") String id, @RequestBody SavingsPlanUpdateRequestDto dto) {
         try {
             savingsPlanService.update(id, dto);
             return Result.success();
@@ -69,9 +69,9 @@ public class SavingsPlanController {
      * 查询单个存款计划
      */
     @GetMapping("/{id}")
-    public Result<SavingsPlanVO> getById(@PathVariable("id") String id) {
+    public Result<SavingsPlanResponseDto> getById(@PathVariable("id") String id) {
         try {
-            SavingsPlanVO vo = savingsPlanService.getById(id);
+            SavingsPlanResponseDto vo = savingsPlanService.getById(id);
             if (vo == null) {
                 return Result.fail(ResultCode._404.getCode(), "计划不存在");
             }
@@ -86,9 +86,9 @@ public class SavingsPlanController {
      * 查询用户的所有存款计划
      */
     @GetMapping("/list")
-    public Result<List<SavingsPlanVO>> list() {
+    public Result<List<SavingsPlanResponseDto>> list() {
         try {
-            List<SavingsPlanVO> voList = savingsPlanService.list();
+            List<SavingsPlanResponseDto> voList = savingsPlanService.list();
             return Result.success(voList);
         } catch (Exception e) {
             log.error("查询存款计划列表失败", e);

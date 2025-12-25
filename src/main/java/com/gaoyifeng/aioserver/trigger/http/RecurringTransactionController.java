@@ -1,11 +1,11 @@
 package com.gaoyifeng.aioserver.trigger.http;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.RecurringTransactionResponseDto;
 import com.gaoyifeng.aioserver.api.service.IRecurringTransactionService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
-import com.gaoyifeng.aioserver.types.dto.RecurringTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.RecurringTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.RecurringTransactionVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class RecurringTransactionController {
      * @return 配置ID
      */
     @PostMapping
-    public Result<String> add(@RequestBody RecurringTransactionAddDTO dto) {
+    public Result<String> add(@RequestBody RecurringTransactionAddRequestDto dto) {
         try {
             String id = recurringTransactionService.add(dto);
             return Result.success(id);
@@ -62,7 +62,7 @@ public class RecurringTransactionController {
      * @return 成功/失败
      */
     @PutMapping("/{id}")
-    public Result<Void> update(@PathVariable("id") String id, @RequestBody RecurringTransactionUpdateDTO dto) {
+    public Result<Void> update(@PathVariable("id") String id, @RequestBody RecurringTransactionUpdateRequestDto dto) {
         try {
             recurringTransactionService.update(id, dto);
             return Result.success();
@@ -78,9 +78,9 @@ public class RecurringTransactionController {
      * @return 固定收支配置VO
      */
     @GetMapping("/{id}")
-    public Result<RecurringTransactionVO> getById(@PathVariable("id") String id) {
+    public Result<RecurringTransactionResponseDto> getById(@PathVariable("id") String id) {
         try {
-            RecurringTransactionVO vo = recurringTransactionService.getById(id);
+            RecurringTransactionResponseDto vo = recurringTransactionService.getById(id);
             if (vo == null) {
                 return Result.fail(ResultCode._404.getCode(), "配置不存在");
             }
@@ -96,9 +96,9 @@ public class RecurringTransactionController {
      * @return 固定收支配置VO列表
      */
     @GetMapping("/list")
-    public Result<List<RecurringTransactionVO>> list() {
+    public Result<List<RecurringTransactionResponseDto>> list() {
         try {
-            List<RecurringTransactionVO> voList = recurringTransactionService.list();
+            List<RecurringTransactionResponseDto> voList = recurringTransactionService.list();
             return Result.success(voList);
         } catch (Exception e) {
             log.error("查询固定收支配置列表失败", e);

@@ -1,10 +1,10 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.response.TransactionFlowResponseDto;
 import com.gaoyifeng.aioserver.api.service.ITransactionFlowService;
 import com.gaoyifeng.aioserver.domain.adapter.repository.ITransactionFlowRepository;
 import com.gaoyifeng.aioserver.domain.model.entity.TransactionFlowEntity;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
-import com.gaoyifeng.aioserver.types.vo.TransactionFlowVO;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -21,7 +21,7 @@ public class TransactionFlowService implements ITransactionFlowService {
     private ITransactionFlowRepository transactionFlowRepository;
 
     @Override
-    public TransactionFlowVO getById(String id) {
+    public TransactionFlowResponseDto getById(String id) {
         String userId = LoginUserContext.getUserId();
         TransactionFlowEntity entity = transactionFlowRepository.queryById(id);
 
@@ -37,11 +37,11 @@ public class TransactionFlowService implements ITransactionFlowService {
     }
 
     @Override
-    public List<TransactionFlowVO> list() {
+    public List<TransactionFlowResponseDto> list() {
         String userId = LoginUserContext.getUserId();
         List<TransactionFlowEntity> entityList = transactionFlowRepository.queryByUserId(userId);
 
-        List<TransactionFlowVO> voList = new ArrayList<>();
+        List<TransactionFlowResponseDto> voList = new ArrayList<>();
         for (TransactionFlowEntity entity : entityList) {
             voList.add(convertToVO(entity));
         }
@@ -49,8 +49,8 @@ public class TransactionFlowService implements ITransactionFlowService {
         return voList;
     }
 
-    private TransactionFlowVO convertToVO(TransactionFlowEntity entity) {
-        TransactionFlowVO vo = new TransactionFlowVO();
+    private TransactionFlowResponseDto convertToVO(TransactionFlowEntity entity) {
+        TransactionFlowResponseDto vo = new TransactionFlowResponseDto();
         vo.setId(entity.getId());
         vo.setUserId(entity.getUserId());
         vo.setFlowType(entity.getFlowType());

@@ -1,12 +1,12 @@
 package com.gaoyifeng.aioserver.api.service;
 
+import com.gaoyifeng.aioserver.api.dto.asset.request.PendingTransactionAddRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.request.PendingTransactionUpdateRequestDto;
+import com.gaoyifeng.aioserver.api.dto.asset.response.PendingTransactionResponseDto;
 import com.gaoyifeng.aioserver.domain.adapter.repository.IPendingTransactionRepository;
 import com.gaoyifeng.aioserver.domain.model.entity.PendingTransactionEntity;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.infrastructure.util.SnowflakeIdWorker;
-import com.gaoyifeng.aioserver.types.dto.PendingTransactionAddDTO;
-import com.gaoyifeng.aioserver.types.dto.PendingTransactionUpdateDTO;
-import com.gaoyifeng.aioserver.types.vo.PendingTransactionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class PendingTransactionService implements IPendingTransactionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void add(String userId, PendingTransactionAddDTO dto) {
+    public void add(String userId, PendingTransactionAddRequestDto dto) {
         PendingTransactionEntity entity = new PendingTransactionEntity();
         SnowflakeIdWorker idWorker = new SnowflakeIdWorker(1, 1);
         entity.setId(idWorker.nextIdStr());
@@ -53,7 +53,7 @@ public class PendingTransactionService implements IPendingTransactionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(String id, String userId, PendingTransactionUpdateDTO dto) {
+    public void update(String id, String userId, PendingTransactionUpdateRequestDto dto) {
         PendingTransactionEntity entity = pendingTransactionRepository.queryById(id);
         if (entity == null) {
             throw new RuntimeException("待入账记录不存在");
@@ -70,13 +70,13 @@ public class PendingTransactionService implements IPendingTransactionService {
     }
 
     @Override
-    public PendingTransactionVO queryById(String id) {
+    public PendingTransactionResponseDto queryById(String id) {
         PendingTransactionEntity entity = pendingTransactionRepository.queryById(id);
         if (entity == null) {
             throw new RuntimeException("待入账记录不存在");
         }
 
-        PendingTransactionVO vo = new PendingTransactionVO();
+        PendingTransactionResponseDto vo = new PendingTransactionResponseDto();
         vo.setId(entity.getId());
         vo.setUserId(entity.getUserId());
         vo.setTransactionType(entity.getTransactionType());
@@ -92,12 +92,12 @@ public class PendingTransactionService implements IPendingTransactionService {
     }
 
     @Override
-    public List<PendingTransactionVO> queryByUserId(String userId) {
+    public List<PendingTransactionResponseDto> queryByUserId(String userId) {
         List<PendingTransactionEntity> entityList = pendingTransactionRepository.queryByUserId(userId);
-        List<PendingTransactionVO> voList = new ArrayList<>();
+        List<PendingTransactionResponseDto> voList = new ArrayList<>();
 
         for (PendingTransactionEntity entity : entityList) {
-            PendingTransactionVO vo = new PendingTransactionVO();
+            PendingTransactionResponseDto vo = new PendingTransactionResponseDto();
             vo.setId(entity.getId());
             vo.setUserId(entity.getUserId());
             vo.setTransactionType(entity.getTransactionType());
