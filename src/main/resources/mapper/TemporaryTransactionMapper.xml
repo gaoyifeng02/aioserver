@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaoyifeng.aioserver.infrastructure.dao.mapper.TemporaryTransactionDao">
+
+    <resultMap id="BaseResultMap" type="com.gaoyifeng.aioserver.infrastructure.dao.po.TemporaryTransactionPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="transaction_type" property="transactionType"/>
+        <result column="transaction_name" property="transactionName"/>
+        <result column="transaction_datetime" property="transactionDatetime"/>
+        <result column="description" property="description"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO asset_temporary_transaction (
+            id, user_id, transaction_type, transaction_name, transaction_datetime, description
+        ) VALUES (
+            #{po.id}, #{po.userId}, #{po.transactionType}, #{po.transactionName}, #{po.transactionDatetime}, #{po.description}
+        )
+    </insert>
+
+    <update id="softDelete">
+        UPDATE asset_temporary_transaction
+        SET is_deleted = 1
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND is_deleted = 0
+    </update>
+
+    <update id="update">
+        UPDATE asset_temporary_transaction
+        SET transaction_name = #{po.transactionName},
+            transaction_datetime = #{po.transactionDatetime},
+            description = #{po.description}
+        WHERE id = #{po.id}
+          AND user_id = #{po.userId}
+          AND is_deleted = 0
+    </update>
+
+    <select id="queryById" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, transaction_type, transaction_name, transaction_datetime,
+            description, is_deleted, create_time, update_time
+        FROM asset_temporary_transaction
+        WHERE id = #{id}
+          AND is_deleted = 0
+    </select>
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        SELECT
+            id, user_id, transaction_type, transaction_name, transaction_datetime,
+            description, is_deleted, create_time, update_time
+        FROM asset_temporary_transaction
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+        ORDER BY transaction_datetime DESC
+    </select>
+
+</mapper>
