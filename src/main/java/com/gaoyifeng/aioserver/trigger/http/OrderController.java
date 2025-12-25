@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/order")
 public class OrderController implements com.gaoyifeng.aioserver.api.IOrderService {
 
     @Autowired

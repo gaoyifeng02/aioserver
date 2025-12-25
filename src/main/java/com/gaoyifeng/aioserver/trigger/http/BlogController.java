@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/blog/blogs")
+@RequestMapping("/blog/blogs")
 public class BlogController implements IBlogService {
 
     @Resource

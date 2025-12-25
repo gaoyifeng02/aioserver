@@ -3,3 +3,6 @@ spring:
     name: aioserver
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:prod}
+  mvc:
+    servlet:
+      path: /api

@@ -99,24 +99,24 @@ CREATE TABLE IF NOT EXISTS `asset_savings_plan` (
 
 -- 初始化用户资产账户
 INSERT INTO `asset_account` (`id`, `user_id`, `total_balance`, `total_savings`) VALUES
-('gaoyifeng', 'gaoyifeng', 0.00, 0.00);
+('1', '1', 0.00, 0.00);
 -- 初始化固定表
 INSERT INTO `asset_recurring_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `amount`, `trigger_type`, `trigger_value`, `status`)
 VALUES
-    ('1', 'gaoyifeng', 'INCOME', '工资进账', 13000.00, 'MONTHLY', '1', 'ACTIVE'),
-    ('2', 'gaoyifeng', 'INCOME', '公积金收入', 1600.00, 'MONTHLY', '26', 'ACTIVE'),
-    ('3', 'gaoyifeng', 'EXPENSE', '房租', 3200.00, 'MONTHLY', '1', 'ACTIVE'),
-    ('4', 'gaoyifeng', 'EXPENSE', '房贷', 1500.00, 'MONTHLY', '1', 'ACTIVE');
+    ('1', '1', 'INCOME', '工资进账', 13000.00, 'MONTHLY', '1', 'ACTIVE'),
+    ('2', '1', 'INCOME', '公积金收入', 1600.00, 'MONTHLY', '26', 'ACTIVE'),
+    ('3', '1', 'EXPENSE', '房租', 3200.00, 'MONTHLY', '1', 'ACTIVE'),
+    ('4', '1', 'EXPENSE', '房贷', 1500.00, 'MONTHLY', '1', 'ACTIVE');
 
 INSERT INTO `asset_recurring_transaction` (`id`, `user_id`, `transaction_type`, `transaction_name`, `amount`, `trigger_type`, `trigger_value`, `status`, `end_date`)
 VALUES
-    ('5', 'gaoyifeng', 'EXPENSE', '抖音借款-第1期', 206.00, 'MONTHLY', '2', 'ACTIVE', '2026-04-30'),
-    ('6', 'gaoyifeng', 'EXPENSE', '抖音借款-第2期', 172.00, 'MONTHLY', '2', 'ACTIVE', '2026-03-30'),
-    ('7', 'gaoyifeng', 'EXPENSE', '抖音借款-第3期', 640.00, 'MONTHLY', '2', 'ACTIVE', '2026-10-02'),
-    ('8', 'gaoyifeng', 'EXPENSE', '小花借款', 1134.00, 'MONTHLY', '2', 'ACTIVE', '2026-08-02'),
-    ('9', 'gaoyifeng', 'EXPENSE', '支付宝借款', 692.00, 'MONTHLY', '8', 'ACTIVE', '2026-11-30'),
-    ('10', 'gaoyifeng', 'EXPENSE', '京东借款', 293.00, 'MONTHLY', '3', 'ACTIVE', '2026-09-30'),
-    ('11', 'gaoyifeng', 'EXPENSE', '好分期借款', 300.00, 'MONTHLY', '23', 'ACTIVE', '2026-07-30'),
-    ('12', 'gaoyifeng', 'EXPENSE', '微信借款', 450.00, 'MONTHLY', '20', 'ACTIVE', '2026-10-30');
+    ('5', '1', 'EXPENSE', '抖音借款-第1期', 206.00, 'MONTHLY', '2', 'ACTIVE', '2026-04-30'),
+    ('6', '1', 'EXPENSE', '抖音借款-第2期', 172.00, 'MONTHLY', '2', 'ACTIVE', '2026-03-30'),
+    ('7', '1', 'EXPENSE', '抖音借款-第3期', 640.00, 'MONTHLY', '2', 'ACTIVE', '2026-10-02'),
+    ('8', '1', 'EXPENSE', '小花借款', 1134.00, 'MONTHLY', '2', 'ACTIVE', '2026-08-02'),
+    ('9', '1', 'EXPENSE', '支付宝借款', 692.00, 'MONTHLY', '8', 'ACTIVE', '2026-11-30'),
+    ('10', '1', 'EXPENSE', '京东借款', 293.00, 'MONTHLY', '3', 'ACTIVE', '2026-09-30'),
+    ('11', '1', 'EXPENSE', '好分期借款', 300.00, 'MONTHLY', '23', 'ACTIVE', '2026-07-30'),
+    ('12', '1', 'EXPENSE', '微信借款', 450.00, 'MONTHLY', '20', 'ACTIVE', '2026-10-30');
 
 

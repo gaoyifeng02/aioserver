@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/ai")
+@RequestMapping("/ai")
 public class ChatController implements IChatService {
 
     @Autowired

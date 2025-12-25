@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/idaas/auth")
+@RequestMapping("/idaas/auth")
 public class AuthController implements IAuthService {
 
     @Autowired
