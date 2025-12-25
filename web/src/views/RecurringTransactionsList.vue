@@ -62,11 +62,10 @@ const deleteTransaction = async () => {
   }
 }
 
-// 切换固定收支状态
-const toggleStatus = async (id, currentStatus) => {
+// 变更固定收支状态
+const changeStatus = async (id, status) => {
   try {
-    const newStatus = currentStatus === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
-    await assetApi.toggleRecurringTransactionStatus(id, newStatus)
+    await assetApi.updateRecurringTransactionStatus(id, status)
     ElMessage.success('状态更新成功')
     // 重新获取列表
     getRecurringTransactions()
@@ -74,6 +73,17 @@ const toggleStatus = async (id, currentStatus) => {
     console.error('更新状态失败:', error)
     ElMessage.error('更新状态失败，请稍后重试')
   }
+}
+
+// 切换启用/禁用状态
+const toggleStatus = (id, currentStatus) => {
+  const newStatus = currentStatus === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
+  changeStatus(id, newStatus)
+}
+
+// 结束固定收支
+const endTransaction = (id) => {
+  changeStatus(id, 'ENDED')
 }
 
 // 格式化金额
@@ -189,10 +199,10 @@ onMounted(() => {
             {{ scope.row.endDate ? new Date(scope.row.endDate).toLocaleDateString() : '无' }}
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述"></el-table-column>
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column label="操作" width="350" fixed="right">
           <template #default="scope">
             <el-button
+              v-if="scope.row.status !== 'ENDED'"
               type="success"
               size="small"
               @click="toggleStatus(scope.row.id, scope.row.status)"
@@ -202,6 +212,17 @@ onMounted(() => {
               {{ scope.row.status === 'ACTIVE' ? '禁用' : '启用' }}
             </el-button>
             <el-button
+              v-if="scope.row.status !== 'ENDED'"
+              type="warning"
+              size="small"
+              @click="endTransaction(scope.row.id)"
+              style="margin-right: 5px"
+            >
+              <el-icon><RefreshRight /></el-icon>
+              结束
+            </el-button>
+            <el-button
+              v-if="scope.row.status !== 'ENDED'"
               type="primary"
               size="small"
               @click="goToEdit(scope.row.id)"

@@ -62,6 +62,7 @@ export const assetApi = {
   createRecurringTransaction: (data) => api.post('/asset/recurring', data),
   updateRecurringTransaction: (id, data) => api.put(`/asset/recurring/${id}`, data),
   deleteRecurringTransaction: (id) => api.delete(`/asset/recurring/${id}`),
+  updateRecurringTransactionStatus: (id, status) => api.patch(`/asset/recurring/${id}/status`, undefined, { params: { status } }),
   
   // 临时收支记录
   getTemporaryTransactions: () => api.get('/asset/temporary/list'),

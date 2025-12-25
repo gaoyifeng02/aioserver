@@ -20,8 +20,7 @@ const form = ref({
   triggerType: 'MONTHLY',
   triggerValue: '',
   status: 'ACTIVE',
-  endDate: null,
-  description: ''
+  endDate: null
 })
 
 // 表单验证规则
@@ -40,7 +39,20 @@ const rules = {
     { required: true, message: '请选择触发类型', trigger: 'change' }
   ],
   triggerValue: [
-    { required: true, message: '请输入触发值', trigger: 'blur' }
+    {
+      validator: (rule, value, callback) => {
+        if (form.value.triggerType === 'DAILY') {
+          // 按日类型时不要求填写
+          callback()
+        } else if (!value) {
+          // 其他类型必须填写
+          callback(new Error('请输入触发值'))
+        } else {
+          callback()
+        }
+      },
+      trigger: ['blur', 'change']
+    }
   ],
   status: [
     { required: true, message: '请选择状态', trigger: 'change' }
@@ -210,15 +222,6 @@ onMounted(() => {
             value-format="YYYY-MM-DD"
             style="width: 100%"
           ></el-date-picker>
-        </el-form-item>
-        
-        <el-form-item label="描述">
-          <el-input
-            v-model="form.description"
-            type="textarea"
-            rows="4"
-            placeholder="请输入描述（可选）"
-          ></el-input>
         </el-form-item>
         
         <el-form-item>

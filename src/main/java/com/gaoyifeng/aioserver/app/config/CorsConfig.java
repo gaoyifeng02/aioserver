@@ -24,7 +24,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 允许所有路径
                 .allowedOriginPatterns("*") // 允许所有来源模式
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD") // 允许的HTTP方法
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH","HEAD") // 允许的HTTP方法
                 .allowedHeaders("*") // 允许所有请求头
                 .allowCredentials(true) // 允许携带认证信息（Authorization等）
                 .maxAge(3600) // 预检请求的有效期，单位秒
