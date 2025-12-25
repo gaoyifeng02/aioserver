@@ -105,4 +105,21 @@ public class RecurringTransactionController {
             return Result.fail(ResultCode._500.getCode(), "查询失败: " + e.getMessage());
         }
     }
+
+    /**
+     * 更新固定收支配置状态（部分更新）
+     * @param id 配置ID
+     * @param status 状态（ACTIVE-启用、DISABLED-禁用、ENDED-已结束）
+     * @return 成功/失败
+     */
+    @PatchMapping("/{id}/status")
+    public Result<Void> updateStatus(@PathVariable("id") String id, @RequestParam("status") String status) {
+        try {
+            recurringTransactionService.updateStatus(id, status);
+            return Result.success();
+        } catch (Exception e) {
+            log.error("更新固定收支配置状态失败", e);
+            return Result.fail(ResultCode._500.getCode(), "更新状态失败: " + e.getMessage());
+        }
+    }
 }

@@ -123,6 +123,33 @@ public class RecurringTransactionService implements IRecurringTransactionService
         return voList;
     }
 
+    @Override
+    public void updateStatus(String id, String status) {
+        String userId = LoginUserContext.getUserId();
+
+        // 查询原数据
+        RecurringTransactionEntity existingEntity = recurringTransactionRepository.queryById(id);
+        if (existingEntity == null) {
+            throw new RuntimeException("配置不存在");
+        }
+
+        // 验证权限
+        if (!existingEntity.getUserId().equals(userId)) {
+            throw new RuntimeException("无权操作此配置");
+        }
+
+        // 验证状态值
+        if (!"ACTIVE".equals(status) && !"DISABLED".equals(status) && !"ENDED".equals(status)) {
+            throw new RuntimeException("无效的状态值");
+        }
+
+        // 更新状态
+        existingEntity.setStatus(status);
+
+        // 保存更新
+        recurringTransactionRepository.update(existingEntity);
+    }
+
     /**
      * 转换Entity为VO
      */

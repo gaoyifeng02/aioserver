@@ -43,4 +43,11 @@ public interface IRecurringTransactionService {
      * @return 固定收支配置VO列表
      */
     List<RecurringTransactionResponseDto> list();
+
+    /**
+     * 更新固定收支配置状态（部分更新）
+     * @param id 配置ID
+     * @param status 状态（ACTIVE-启用、DISABLED-禁用、ENDED-已结束）
+     */
+    void updateStatus(String id, String status);
 }
