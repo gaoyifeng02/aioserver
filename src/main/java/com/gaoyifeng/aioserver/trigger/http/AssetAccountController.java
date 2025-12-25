@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.trigger.http;
 
+import com.gaoyifeng.aioserver.api.IAssetAccountService;
 import com.gaoyifeng.aioserver.api.dto.asset.response.AssetAccountResponseDto;
-import com.gaoyifeng.aioserver.api.service.IAssetAccountService;
 import com.gaoyifeng.aioserver.infrastructure.threadlocal.LoginUserContext;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;

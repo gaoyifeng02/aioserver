@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.repository;
 
-import com.gaoyifeng.aioserver.domain.blog.adapter.repository.IBlogRepository;
-import com.gaoyifeng.aioserver.domain.blog.model.entity.Blog;
+import com.gaoyifeng.aioserver.domain.adapter.repository.IBlogRepository;
+import com.gaoyifeng.aioserver.domain.model.entity.Blog;
 import com.gaoyifeng.aioserver.infrastructure.dao.mapper.BlogMapper;
 import com.gaoyifeng.aioserver.infrastructure.dao.po.BlogPO;
 import lombok.extern.slf4j.Slf4j;

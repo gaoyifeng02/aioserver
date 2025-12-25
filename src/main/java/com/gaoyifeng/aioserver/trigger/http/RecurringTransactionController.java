@@ -1,9 +1,9 @@
 package com.gaoyifeng.aioserver.trigger.http;
 
+import com.gaoyifeng.aioserver.api.IRecurringTransactionService;
 import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionAddRequestDto;
 import com.gaoyifeng.aioserver.api.dto.asset.request.RecurringTransactionUpdateRequestDto;
 import com.gaoyifeng.aioserver.api.dto.asset.response.RecurringTransactionResponseDto;
-import com.gaoyifeng.aioserver.api.service.IRecurringTransactionService;
 import com.gaoyifeng.aioserver.types.common.Result;
 import com.gaoyifeng.aioserver.types.common.ResultCode;
 import lombok.extern.slf4j.Slf4j;

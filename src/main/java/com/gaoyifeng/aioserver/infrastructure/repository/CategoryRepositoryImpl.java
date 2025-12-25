@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.repository;
 
-import com.gaoyifeng.aioserver.domain.blog.adapter.repository.ICategoryRepository;
-import com.gaoyifeng.aioserver.domain.blog.model.entity.Category;
+import com.gaoyifeng.aioserver.domain.adapter.repository.ICategoryRepository;
+import com.gaoyifeng.aioserver.domain.model.entity.Category;
 import com.gaoyifeng.aioserver.infrastructure.dao.mapper.CategoryMapper;
 import com.gaoyifeng.aioserver.infrastructure.dao.po.CategoryPO;
 import org.springframework.stereotype.Repository;

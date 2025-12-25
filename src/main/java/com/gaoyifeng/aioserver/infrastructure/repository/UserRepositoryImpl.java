@@ -1,7 +1,7 @@
 package com.gaoyifeng.aioserver.infrastructure.repository;
 
-import com.gaoyifeng.aioserver.domain.auth.adapter.port.IUserRepository;
-import com.gaoyifeng.aioserver.domain.auth.model.entity.User;
+import com.gaoyifeng.aioserver.domain.adapter.repository.IUserRepository;
+import com.gaoyifeng.aioserver.domain.model.entity.User;
 import com.gaoyifeng.aioserver.infrastructure.dao.mapper.UserMapper;
 import com.gaoyifeng.aioserver.infrastructure.dao.po.UserPO;
 import lombok.extern.slf4j.Slf4j;
